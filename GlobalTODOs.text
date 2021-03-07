@@ -1,0 +1,42 @@
+// -------------
+// Symbol legend:
+// -------------
+
+Task priority:
+"!!!!-" = Blocker
+"!!!-" = Critical
+"!!-" = Major
+"!-" = Minor
+"- ((" = Probably not needed
+
+Work status:
+"-" = Queued
+">-" = Analysis
+">>-" = Implementation
+">>>-" = Testing
+
+
+// -------------
+// Worklog:
+// -------------
+
+!!>- Implement functional map generation
+	- Add different basic terrain tile types
+	- Add basic vegetation tile types
+	- Make vegetation not spawn on water, desert, etc.
+	- Add a weight factor to the different tile ids (eg. 20% tree, 10% bush, 30% grass, 40% nothing)
+
+
+// -------------
+// Backlog:
+// -------------
+
+!!!- Move camera faster when holding down the shift key
+!!- Use WASD instead of arrow keys for camera movement
+!!- Add mouse click, hold and move for camera panning
+
+// -------------
+// Ideas/Concepts:
+// -------------
+
+!!- Maybe have different height levels (how to display and handle cliffs?)

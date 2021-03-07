@@ -21,7 +21,8 @@ a:hover {
 }
 
 .main-wrapper {
-    width: 512px;
+    width: 1536px;
+    height: 768px;
     padding-left: 1em;
     padding-right: 1em;
     margin: 0 auto;

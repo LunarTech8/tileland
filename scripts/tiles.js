@@ -6,9 +6,12 @@ const TILE_ID_TERRAIN_MIN = 1;
 const TILE_ID_TERRAIN_MAX = 3;
 const TILE_ID_VEGETATION_MIN = 4;
 const TILE_ID_VEGETATION_MAX = 6;
-const MAP_SIZE_X = 16;  // In tiles
-const MAP_SIZE_Y = 16;  // In tiles
+const MAP_TILES_X = 32;  // In tiles
+const MAP_TILES_Y = 32;  // In tiles
 const TILE_SIZE = 64;  // In pixels
+const MAP_SIZE_X = 1536;  // Display size in pixels
+const MAP_SIZE_Y = 768;  // Display size in pixels
+const MAP_PERLIN_NOISE_OCTAVES = 4;
 
 
 // --------------------
@@ -17,14 +20,14 @@ const TILE_SIZE = 64;  // In pixels
 
 class Map
 {
-    rows;
     cols;
+    rows;
     layers;  // Terrain, vegetation
 
-    constructor(rows, cols)
+    constructor(cols, rows)
     {
-        this.rows = rows;
         this.cols = cols;
+        this.rows = rows;
         this.layers = [this.createRandomLayer(TILE_ID_TERRAIN_MIN, TILE_ID_TERRAIN_MAX), this.createRandomLayer(TILE_ID_VEGETATION_MIN, TILE_ID_VEGETATION_MAX)];
     }
 
@@ -35,45 +38,50 @@ class Map
 
     createRandomLayer(minTileId, maxTileId)
     {
+        let perlinNoise = Random.generatePerlinNoise(this.rows, this.cols, MAP_PERLIN_NOISE_OCTAVES);
         let layer = [];
-        for (var c = 0; c <= this.cols; c++)
+        for (let c = 0; c < this.cols; c++)
         {
-            for (var r = 0; r <= this.rows; r++)
+            for (let r = 0; r < this.rows; r++)
             {
-                layer[r * this.cols + c] = Utilities.getRandomInt(minTileId, maxTileId);
+                layer[r * this.cols + c] = Utilities.scaleToInt(perlinNoise.get(r, c), minTileId, maxTileId);
             }
         }
         return layer;
     }
 }
 
-function Camera(map, width, height)
+class Camera
 {
-    this.x = 0;
-    this.y = 0;
-    this.width = width;
-    this.height = height;
-    this.maxX = map.cols * TILE_SIZE - width;
-    this.maxY = map.rows * TILE_SIZE - height;
-}
+    static SPEED = 256;  // Pixels per second
 
-Camera.prototype.move = function(delta, dirx, diry)
-{
-    // Move camera:
-    this.x += dirx * Camera.SPEED * delta;
-    this.y += diry * Camera.SPEED * delta;
-    // Clamp values:
-    this.x = Math.max(0, Math.min(this.x, this.maxX));
-    this.y = Math.max(0, Math.min(this.y, this.maxY));
-};
+    constructor(map, width, height)
+    {
+        this.x = 0;
+        this.y = 0;
+        this.width = width;
+        this.height = height;
+        this.maxX = map.cols * TILE_SIZE - width;
+        this.maxY = map.rows * TILE_SIZE - height;
+    }
+
+    move(delta, dirX, dirY)
+    {
+        // Move camera:
+        this.x += dirX * Camera.SPEED * delta;
+        this.y += dirY * Camera.SPEED * delta;
+        // Clamp values:
+        this.x = Math.max(0, Math.min(this.x, this.maxX));
+        this.y = Math.max(0, Math.min(this.y, this.maxY));
+    }
+}
 
 
 // --------------------
 // Functional code
 // --------------------
 
-let map = new Map(MAP_SIZE_X, MAP_SIZE_Y);
-Camera.SPEED = 256; // Pixels per second
+let map = new Map(MAP_TILES_X, MAP_TILES_Y);
 
 Game.load = function()
 {
@@ -82,40 +90,42 @@ Game.load = function()
 
 Game.init = function()
 {
+    this.minX = 0;
+    this.minY = 0;
+    this.maxX = MAP_SIZE_X;
+    this.maxY = MAP_SIZE_Y;
     Keyboard.listenForEvents([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN]);
     this.tileAtlas = Loader.getImage('tiles');
-    this.camera = new Camera(map, 512, 512);
+    this.camera = new Camera(map, this.maxX, this.maxY);
 };
 
 Game.update = function(delta)
 {
     // Handle camera movement with arrow keys:
-    var dirx = 0;
-    var diry = 0;
-    if (Keyboard.isDown(Keyboard.LEFT)) { dirx = -1; }
-    if (Keyboard.isDown(Keyboard.RIGHT)) { dirx = 1; }
-    if (Keyboard.isDown(Keyboard.UP)) { diry = -1; }
-    if (Keyboard.isDown(Keyboard.DOWN)) { diry = 1; }
-
-    this.camera.move(delta, dirx, diry);
+    let dirX = 0;
+    let dirY = 0;
+    if (Keyboard.isDown(Keyboard.LEFT)) { dirX = -1; }
+    if (Keyboard.isDown(Keyboard.RIGHT)) { dirX = 1; }
+    if (Keyboard.isDown(Keyboard.UP)) { dirY = -1; }
+    if (Keyboard.isDown(Keyboard.DOWN)) { dirY = 1; }
+    this.camera.move(delta, dirX, dirY);
 };
 
 Game._drawLayer = function(layer)
 {
-    var startCol = Math.floor(this.camera.x / TILE_SIZE);
-    var endCol = startCol + (this.camera.width / TILE_SIZE);
-    var startRow = Math.floor(this.camera.y / TILE_SIZE);
-    var endRow = startRow + (this.camera.height / TILE_SIZE);
-    var offsetX = -this.camera.x + startCol * TILE_SIZE;
-    var offsetY = -this.camera.y + startRow * TILE_SIZE;
-
-    for (var c = startCol; c <= endCol; c++)
+    let startCol = Math.floor(this.camera.x / TILE_SIZE);
+    let endCol = startCol + (this.camera.width / TILE_SIZE);
+    let startRow = Math.floor(this.camera.y / TILE_SIZE);
+    let endRow = startRow + (this.camera.height / TILE_SIZE);
+    let offsetX = -this.camera.x + startCol * TILE_SIZE;
+    let offsetY = -this.camera.y + startRow * TILE_SIZE;
+    for (let c = startCol; c <= endCol; c++)
     {
-        for (var r = startRow; r <= endRow; r++)
+        for (let r = startRow; r <= endRow; r++)
         {
-            var tile = map.getTile(layer, c, r);
-            var x = (c - startCol) * TILE_SIZE + offsetX;
-            var y = (r - startRow) * TILE_SIZE + offsetY;
+            let tile = map.getTile(layer, c, r);
+            let x = (c - startCol) * TILE_SIZE + offsetX;
+            let y = (r - startRow) * TILE_SIZE + offsetY;
             if (tile !== 0)
             {
                 this.ctx.drawImage
