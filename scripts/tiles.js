@@ -14,6 +14,9 @@ const MAP_SIZE_Y = 768;  // Display size in pixels
 const MAP_PERLIN_NOISE_OCTAVES = 5;
 const CAMERA_SPEED_NORMAL = 512;  // Pixels per second
 const CAMERA_SPEED_FAST = CAMERA_SPEED_NORMAL * 3;  // Pixels per second
+const CAMERA_ZOOM_MIN = 0.1;
+const CAMERA_ZOOM_MAX = 10.0;
+const CAMERA_ZOOM_SPEED = 0.1;
 
 
 // --------------------
@@ -56,6 +59,7 @@ class Map
 class Camera
 {
     speed = CAMERA_SPEED_NORMAL;
+    zoom = 1.0;
 
     constructor(map, width, height)
     {
@@ -83,7 +87,8 @@ class Camera
 // Functional code
 // --------------------
 
-let map = new Map(MAP_TILES_X, MAP_TILES_Y);
+let map;
+let camera;
 
 Game.load = function()
 {
@@ -96,14 +101,19 @@ Game.init = function()
     this.minY = 0;
     this.maxX = MAP_SIZE_X;
     this.maxY = MAP_SIZE_Y;
+    this.tileAtlas = Loader.getImage('tiles');
+    map = new Map(MAP_TILES_X, MAP_TILES_Y);
+    camera = new Camera(map, this.maxX, this.maxY);
     Keyboard.listenForKeys([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN, Keyboard.W, Keyboard.A, Keyboard.S, Keyboard.D, Keyboard.SHIFT]);
     Keyboard.onScrolling(function(event)
     {
-        event.preventDefault();  // FIXME: check how to prevent browser scrolling
-        console.info(event.deltaY);  // DEBUG: use event.deltaY value to zoom in/out
+        event.preventDefault();
+        if (event.deltaY != undefined)
+        {
+            camera.zoom = Math.min(Math.max(camera.zoom * Math.exp(event.deltaY * CAMERA_ZOOM_SPEED), CAMERA_ZOOM_MIN), CAMERA_ZOOM_MAX);
+            // TODO: also use camera.zoom to scale distance between scaled tiles
+        }
     });
-    this.tileAtlas = Loader.getImage('tiles');
-    this.camera = new Camera(map, this.maxX, this.maxY);
 };
 
 Game.update = function(delta)
@@ -119,8 +129,8 @@ Game.update = function(delta)
     if (Keyboard.isDown(Keyboard.D)) { dirX = 1; }
     if (Keyboard.isDown(Keyboard.W)) { dirY = -1; }
     if (Keyboard.isDown(Keyboard.S)) { dirY = 1; }
-    if (Keyboard.isDown(Keyboard.SHIFT)) { this.camera.speed = CAMERA_SPEED_FAST; } else { this.camera.speed = CAMERA_SPEED_NORMAL; }
-    this.camera.move(delta, dirX, dirY);
+    if (Keyboard.isDown(Keyboard.SHIFT)) { camera.speed = CAMERA_SPEED_FAST; } else { camera.speed = CAMERA_SPEED_NORMAL; }
+    camera.move(delta, dirX, dirY);
 };
 
 Game.render = function()
@@ -133,12 +143,12 @@ Game.render = function()
 
 Game._drawLayer = function(layer)
 {
-    let startCol = Math.floor(this.camera.x / TILE_SIZE);
-    let endCol = startCol + (this.camera.width / TILE_SIZE);
-    let startRow = Math.floor(this.camera.y / TILE_SIZE);
-    let endRow = startRow + (this.camera.height / TILE_SIZE);
-    let offsetX = -this.camera.x + startCol * TILE_SIZE;
-    let offsetY = -this.camera.y + startRow * TILE_SIZE;
+    let startCol = Math.floor(camera.x / TILE_SIZE);
+    let endCol = startCol + (camera.width / TILE_SIZE);
+    let startRow = Math.floor(camera.y / TILE_SIZE);
+    let endRow = startRow + (camera.height / TILE_SIZE);
+    let offsetX = -camera.x + startCol * TILE_SIZE;
+    let offsetY = -camera.y + startRow * TILE_SIZE;
     for (let c = startCol; c <= endCol; c++)
     {
         for (let r = startRow; r <= endRow; r++)
@@ -157,8 +167,8 @@ Game._drawLayer = function(layer)
                     TILE_SIZE, // source height
                     Math.round(x),  // target x
                     Math.round(y), // target y
-                    TILE_SIZE, // target width
-                    TILE_SIZE // target height
+                    TILE_SIZE * camera.zoom, // target width
+                    TILE_SIZE * camera.zoom // target height
                 );
             }
         }

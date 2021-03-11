@@ -17,7 +17,7 @@ Keyboard._keys = {};
 
 Keyboard.onScrolling = function(func)
 {
-    window.addEventListener('wheel', func.bind(this));
+    window.addEventListener('wheel', func.bind(this), { passive: false });
 }
 
 Keyboard.listenForKeys = function(keys)
