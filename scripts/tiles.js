@@ -15,8 +15,8 @@ const MAP_PERLIN_NOISE_OCTAVES = 5;
 const CAMERA_SPEED_NORMAL = 512;  // Pixels per second
 const CAMERA_SPEED_FAST = CAMERA_SPEED_NORMAL * 3;  // Pixels per second
 const CAMERA_ZOOM_MIN = 0.1;
-const CAMERA_ZOOM_MAX = 10.0;
-const CAMERA_ZOOM_SPEED = 0.1;
+const CAMERA_ZOOM_MAX = 4.0;
+const CAMERA_ZOOM_SPEED = 0.05;
 
 
 // --------------------
@@ -38,6 +38,10 @@ class Map
 
     getTile(layer, col, row)
     {
+        if (col < 0 || col >= this.cols || row < 0 || row >= this.row)
+        {
+			throw new Error('Slot is outside boundaries');
+        }
         return this.layers[layer][row * this.cols + col];
     }
 
@@ -111,7 +115,8 @@ Game.init = function()
         if (event.deltaY != undefined)
         {
             camera.zoom = Math.min(Math.max(camera.zoom * Math.exp(event.deltaY * CAMERA_ZOOM_SPEED), CAMERA_ZOOM_MIN), CAMERA_ZOOM_MAX);
-            // TODO: also use camera.zoom to scale distance between scaled tiles
+            // TODO: adjust camera.maxX, camera.width, camera.maxY, camera.height to camera.zoom
+            // TODO: adjust x, y to camera.zoom
         }
     });
 };
@@ -143,32 +148,36 @@ Game.render = function()
 
 Game._drawLayer = function(layer)
 {
-    let startCol = Math.floor(camera.x / TILE_SIZE);
-    let endCol = startCol + (camera.width / TILE_SIZE);
-    let startRow = Math.floor(camera.y / TILE_SIZE);
-    let endRow = startRow + (camera.height / TILE_SIZE);
-    let offsetX = -camera.x + startCol * TILE_SIZE;
-    let offsetY = -camera.y + startRow * TILE_SIZE;
+    const tileSizeSource = TILE_SIZE;
+    const tileSizeTarget = Math.round(TILE_SIZE * camera.zoom);
+    let startCol = Math.floor(camera.x / tileSizeTarget);
+    let endCol = startCol + Math.ceil(camera.width / tileSizeTarget);
+    let startRow = Math.floor(camera.y / tileSizeTarget);
+    let endRow = startRow + Math.ceil(camera.height / tileSizeTarget);
+    let offsetX = -camera.x + startCol * tileSizeTarget;
+    let offsetY = -camera.y + startRow * tileSizeTarget;
     for (let c = startCol; c <= endCol; c++)
     {
         for (let r = startRow; r <= endRow; r++)
         {
-            let tile = map.getTile(layer, c, r);
-            let x = (c - startCol) * TILE_SIZE + offsetX;
-            let y = (r - startRow) * TILE_SIZE + offsetY;
+            let tile = 0;
+            try { tile = map.getTile(layer, c, r); }
+            catch (error) {}
+            let x = (c - startCol) * tileSizeTarget + offsetX;
+            let y = (r - startRow) * tileSizeTarget + offsetY;
             if (tile !== 0)
             {
                 this.ctx.drawImage
                 (
                     this.tileAtlas, // image
-                    (tile - 1) * TILE_SIZE, // source x
+                    (tile - 1) * tileSizeSource, // source x
                     0, // source y
-                    TILE_SIZE, // source width
-                    TILE_SIZE, // source height
+                    tileSizeSource, // source width
+                    tileSizeSource, // source height
                     Math.round(x),  // target x
                     Math.round(y), // target y
-                    TILE_SIZE * camera.zoom, // target width
-                    TILE_SIZE * camera.zoom // target height
+                    tileSizeTarget, // target width
+                    tileSizeTarget // target height
                 );
             }
         }
