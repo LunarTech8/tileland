@@ -6,17 +6,15 @@ const TILE_ID_TERRAIN_MIN = 1;
 const TILE_ID_TERRAIN_MAX = 3;
 const TILE_ID_VEGETATION_MIN = 4;
 const TILE_ID_VEGETATION_MAX = 6;
-const MAP_TILES_X = 128;  // In tiles
-const MAP_TILES_Y = 128;  // In tiles
-const TILE_SIZE = 64;  // In pixels
-const MAP_SIZE_X = 1536;  // Display size in pixels
-const MAP_SIZE_Y = 768;  // Display size in pixels
 const MAP_PERLIN_NOISE_OCTAVES = 5;
-const CAMERA_SPEED_NORMAL = 512;  // Pixels per second
-const CAMERA_SPEED_FAST = CAMERA_SPEED_NORMAL * 3;  // Pixels per second
+const MAP_TILES_X = 256;
+const MAP_TILES_Y = 256;
+const CAMERA_SPEED_NORMAL = 0.1;
+const CAMERA_SPEED_FAST = CAMERA_SPEED_NORMAL * 3;
 const CAMERA_ZOOM_MIN = 0.1;
 const CAMERA_ZOOM_MAX = 4.0;
 const CAMERA_ZOOM_SPEED = 0.05;
+const DEFAULT_TILE_SIZE = 64;  // In pixels
 
 
 // --------------------
@@ -62,27 +60,36 @@ class Map
 
 class Camera
 {
-    speed = CAMERA_SPEED_NORMAL;
-    zoom = 1.0;
+    x;
+    y;
+    zoom
+    speed;
 
-    constructor(map, width, height)
+    constructor(x, y, zoom, speed)
     {
-        this.x = 0;
-        this.y = 0;
-        this.width = width;
-        this.height = height;
-        this.maxX = map.cols * TILE_SIZE - width;
-        this.maxY = map.rows * TILE_SIZE - height;
+        this.x = x;
+        this.y = y;
+        this.zoom = zoom;
+        this.speed = speed;
     }
 
     move(delta, dirX, dirY)
     {
         // Move camera:
-        this.x += dirX * this.speed * delta;
-        this.y += dirY * this.speed * delta;
+        this.x += dirX * this.speed * delta / this.zoom;
+        this.y += dirY * this.speed * delta / this.zoom;
         // Clamp values:
-        this.x = Math.max(0, Math.min(this.x, this.maxX));
-        this.y = Math.max(0, Math.min(this.y, this.maxY));
+        const tileSize = Math.round(DEFAULT_TILE_SIZE * this.zoom);
+        const halfWidth = DISPLAY_SIZE_X / (2 * MAP_TILES_X * tileSize);
+        const halfHeight = DISPLAY_SIZE_Y / (2 * MAP_TILES_Y * tileSize);
+        this.x = Math.max(halfWidth, Math.min(this.x, 1 - halfWidth));
+        this.y = Math.max(halfHeight, Math.min(this.y, 1 - halfHeight));
+    }
+
+    scale(delta)
+    {
+        const zoomMin = Math.max(DISPLAY_SIZE_X / (MAP_TILES_X * DEFAULT_TILE_SIZE), DISPLAY_SIZE_Y / (MAP_TILES_Y * DEFAULT_TILE_SIZE), CAMERA_ZOOM_MIN);
+        this.zoom = Math.min(Math.max(this.zoom * Math.exp(delta * CAMERA_ZOOM_SPEED), zoomMin), CAMERA_ZOOM_MAX);
     }
 }
 
@@ -101,22 +108,16 @@ Game.load = function()
 
 Game.init = function()
 {
-    this.minX = 0;
-    this.minY = 0;
-    this.maxX = MAP_SIZE_X;
-    this.maxY = MAP_SIZE_Y;
     this.tileAtlas = Loader.getImage('tiles');
     map = new Map(MAP_TILES_X, MAP_TILES_Y);
-    camera = new Camera(map, this.maxX, this.maxY);
+    camera = new Camera(0.5, 0.5, 1, CAMERA_SPEED_NORMAL);
     Keyboard.listenForKeys([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN, Keyboard.W, Keyboard.A, Keyboard.S, Keyboard.D, Keyboard.SHIFT]);
     Keyboard.onScrolling(function(event)
     {
         event.preventDefault();
         if (event.deltaY != undefined)
         {
-            camera.zoom = Math.min(Math.max(camera.zoom * Math.exp(event.deltaY * CAMERA_ZOOM_SPEED), CAMERA_ZOOM_MIN), CAMERA_ZOOM_MAX);
-            // TODO: adjust camera.maxX, camera.width, camera.maxY, camera.height to camera.zoom
-            // TODO: adjust x, y to camera.zoom
+            camera.scale(-event.deltaY);
         }
     });
 };
@@ -148,23 +149,21 @@ Game.render = function()
 
 Game._drawLayer = function(layer)
 {
-    const tileSizeSource = TILE_SIZE;
-    const tileSizeTarget = Math.round(TILE_SIZE * camera.zoom);
-    let startCol = Math.floor(camera.x / tileSizeTarget);
-    let endCol = startCol + Math.ceil(camera.width / tileSizeTarget);
-    let startRow = Math.floor(camera.y / tileSizeTarget);
-    let endRow = startRow + Math.ceil(camera.height / tileSizeTarget);
-    let offsetX = -camera.x + startCol * tileSizeTarget;
-    let offsetY = -camera.y + startRow * tileSizeTarget;
-    for (let c = startCol; c <= endCol; c++)
+    const tileSizeSource = DEFAULT_TILE_SIZE;
+    const tileSizeTarget = Math.round(DEFAULT_TILE_SIZE * camera.zoom);
+    const startCol = Math.floor(camera.x * MAP_TILES_X - (0.5 * DISPLAY_SIZE_X / tileSizeTarget));
+    const endCol = Math.ceil(camera.x * MAP_TILES_X + (0.5 * DISPLAY_SIZE_X / tileSizeTarget));
+    const offsetCol = camera.x * MAP_TILES_X - 0.5 * DISPLAY_SIZE_X / tileSizeTarget;
+    const startRow = Math.floor(camera.y * MAP_TILES_Y - (0.5 * DISPLAY_SIZE_Y / tileSizeTarget));
+    const endRow = Math.ceil(camera.y * MAP_TILES_Y + (0.5 * DISPLAY_SIZE_Y / tileSizeTarget));
+    const offsetRow = camera.y * MAP_TILES_Y - 0.5 * DISPLAY_SIZE_Y / tileSizeTarget;
+    for (let c = startCol; c < endCol; c++)
     {
-        for (let r = startRow; r <= endRow; r++)
+        for (let r = startRow; r < endRow; r++)
         {
-            let tile = 0;
-            try { tile = map.getTile(layer, c, r); }
-            catch (error) {}
-            let x = (c - startCol) * tileSizeTarget + offsetX;
-            let y = (r - startRow) * tileSizeTarget + offsetY;
+            let tile = map.getTile(layer, c, r);
+            let displayX = Math.round((c - offsetCol) * tileSizeTarget);
+            let displayY = Math.round((r - offsetRow) * tileSizeTarget);
             if (tile !== 0)
             {
                 this.ctx.drawImage
@@ -174,8 +173,8 @@ Game._drawLayer = function(layer)
                     0, // source y
                     tileSizeSource, // source width
                     tileSizeSource, // source height
-                    Math.round(x),  // target x
-                    Math.round(y), // target y
+                    displayX,  // target x
+                    displayY, // target y
                     tileSizeTarget, // target width
                     tileSizeTarget // target height
                 );

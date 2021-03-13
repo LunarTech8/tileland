@@ -20,7 +20,6 @@ Work status:
 // Worklog:
 // -------------
 
-!!!>>- Use scroll wheel to zoom
 !!>- Implement functional map generation
 	- Add different basic terrain tile types
 	- Add basic vegetation tile types
@@ -34,6 +33,7 @@ Work status:
 
 !!- Add mouse click, hold and move for camera panning
 !- Use Array2D for layers in Map
+!- Fix aliasing/interpolation effect when zooming in more than factor one
 
 
 // -------------
