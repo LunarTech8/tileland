@@ -21,11 +21,7 @@ Work status:
 // -------------
 
 !!>- Implement functional map generation
-	- Add a tile class
-	- Add different basic terrain tile types
-	- Add basic vegetation tile types
-	- Make vegetation not spawn on water, desert, etc.
-	- Add a weight factor to the different tile ids (eg. 20% tree, 10% bush, 30% grass, 40% nothing)
+	- Use 2D array of Tile objects in map instead of layers
 
 
 // -------------
@@ -33,7 +29,6 @@ Work status:
 // -------------
 
 !!- Add mouse click, hold and move for camera panning
-!- Use Array2D for layers in Map
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
 
@@ -41,4 +36,5 @@ Work status:
 // Ideas/Concepts:
 // -------------
 
-!!- Maybe have different height levels (how to display and handle cliffs?)
+!!- Develope logic for cliff detection based on height difference to neighbouring tiles
+!- Maybe implement a humidity value for tiles based on distance to water and height that influences fertility etc.

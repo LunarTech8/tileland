@@ -51,7 +51,7 @@ class Map
         {
             for (let r = 0; r < this.rows; r++)
             {
-                layer[r * this.cols + c] = Utilities.scaleToInt(perlinNoise.get(r, c), minTileId, maxTileId);
+                layer[r * this.cols + c] = Utilities.interpolateLinearInt(minTileId, maxTileId, perlinNoise.get(r, c));
             }
         }
         return layer;
