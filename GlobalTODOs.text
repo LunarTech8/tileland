@@ -21,6 +21,7 @@ Work status:
 // -------------
 
 !!>- Implement functional map generation
+	- Add a tile class
 	- Add different basic terrain tile types
 	- Add basic vegetation tile types
 	- Make vegetation not spawn on water, desert, etc.

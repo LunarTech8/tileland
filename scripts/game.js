@@ -49,5 +49,5 @@ Game.render = function() {};
 
 window.onload = function()
 {
-    Game.run(document.getElementById('tiles').getContext('2d'));
+    Game.run(document.getElementById('tileland').getContext('2d'));
 };
