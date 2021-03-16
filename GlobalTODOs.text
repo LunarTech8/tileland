@@ -21,7 +21,8 @@ Work status:
 // -------------
 
 !!>- Implement functional map generation
-	- Use 2D array of Tile objects in map instead of layers
+	- Adjust determine functions to output good maps
+	- Fix problems with maps generation (trees in water, too much rocky sand, etc.)
 
 
 // -------------

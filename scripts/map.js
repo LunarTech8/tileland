@@ -2,10 +2,6 @@
 // Data code
 // --------------------
 
-const TILE_ID_TERRAIN_MIN = 1;
-const TILE_ID_TERRAIN_MAX = 3;
-const TILE_ID_VEGETATION_MIN = 4;
-const TILE_ID_VEGETATION_MAX = 6;
 const MAP_PERLIN_NOISE_OCTAVES = 5;
 const MAP_TILES_X = 256;
 const MAP_TILES_Y = 256;
@@ -25,36 +21,22 @@ class Map
 {
     cols;
     rows;
-    layers;  // Terrain, vegetation
+    tiles;
 
     constructor(cols, rows)
     {
         this.cols = cols;
         this.rows = rows;
-        this.layers = [this.createRandomLayer(TILE_ID_TERRAIN_MIN, TILE_ID_TERRAIN_MAX), this.createRandomLayer(TILE_ID_VEGETATION_MIN, TILE_ID_VEGETATION_MAX)];
-    }
-
-    getTile(layer, col, row)
-    {
-        if (col < 0 || col >= this.cols || row < 0 || row >= this.row)
-        {
-			throw new Error('Slot is outside boundaries');
-        }
-        return this.layers[layer][row * this.cols + col];
-    }
-
-    createRandomLayer(minTileId, maxTileId)
-    {
-        let perlinNoise = Random.generatePerlinNoise(this.rows, this.cols, MAP_PERLIN_NOISE_OCTAVES);
-        let layer = [];
+        this.tiles = new Array2D(this.cols, this.rows);
+        let heightNoise = Random.generatePerlinNoise(this.cols, this.rows, MAP_PERLIN_NOISE_OCTAVES);
+        let fertilityNoise = Random.generatePerlinNoise(this.cols, this.rows, MAP_PERLIN_NOISE_OCTAVES);
         for (let c = 0; c < this.cols; c++)
         {
             for (let r = 0; r < this.rows; r++)
             {
-                layer[r * this.cols + c] = Utilities.interpolateLinearInt(minTileId, maxTileId, perlinNoise.get(r, c));
+                this.tiles.set(c, r, new Tile(heightNoise.get(c, r), fertilityNoise.get(c, r), r / this.rows));
             }
         }
-        return layer;
     }
 }
 
@@ -103,12 +85,13 @@ let camera;
 
 Game.load = function()
 {
-    return [Loader.loadImage('tiles', '../assets/tiles.png')];
+    return [Loader.loadImage('terrain', '../assets/terrain.png'), Loader.loadImage('vegetation', '../assets/vegetation.png')];
 };
 
 Game.init = function()
 {
-    this.tileAtlas = Loader.getImage('tiles');
+    this.tileAtlasTerrain = Loader.getImage('terrain');
+    this.tileAtlasVegetation = Loader.getImage('vegetation');
     map = new Map(MAP_TILES_X, MAP_TILES_Y);
     camera = new Camera(0.5, 0.5, 1, CAMERA_SPEED_NORMAL);
     Keyboard.listenForKeys([Keyboard.LEFT, Keyboard.RIGHT, Keyboard.UP, Keyboard.DOWN, Keyboard.W, Keyboard.A, Keyboard.S, Keyboard.D, Keyboard.SHIFT]);
@@ -141,44 +124,25 @@ Game.update = function(delta)
 
 Game.render = function()
 {
-    // Draw map background layer:
-    this._drawLayer(0);
-    // Draw map top layer:
-    this._drawLayer(1);
+    this._drawLayers();
 };
 
-Game._drawLayer = function(layer)
+Game._drawLayers = function()
 {
-    const tileSizeSource = DEFAULT_TILE_SIZE;
-    const tileSizeTarget = Math.round(DEFAULT_TILE_SIZE * camera.zoom);
-    const startCol = Math.floor(camera.x * MAP_TILES_X - (0.5 * DISPLAY_SIZE_X / tileSizeTarget));
-    const endCol = Math.ceil(camera.x * MAP_TILES_X + (0.5 * DISPLAY_SIZE_X / tileSizeTarget));
-    const offsetCol = camera.x * MAP_TILES_X - 0.5 * DISPLAY_SIZE_X / tileSizeTarget;
-    const startRow = Math.floor(camera.y * MAP_TILES_Y - (0.5 * DISPLAY_SIZE_Y / tileSizeTarget));
-    const endRow = Math.ceil(camera.y * MAP_TILES_Y + (0.5 * DISPLAY_SIZE_Y / tileSizeTarget));
-    const offsetRow = camera.y * MAP_TILES_Y - 0.5 * DISPLAY_SIZE_Y / tileSizeTarget;
+    const tileSize = Math.round(DEFAULT_TILE_SIZE * camera.zoom);
+    const startCol = Math.floor(camera.x * MAP_TILES_X - (0.5 * DISPLAY_SIZE_X / tileSize));
+    const endCol = Math.ceil(camera.x * MAP_TILES_X + (0.5 * DISPLAY_SIZE_X / tileSize));
+    const offsetCol = camera.x * MAP_TILES_X - 0.5 * DISPLAY_SIZE_X / tileSize;
+    const startRow = Math.floor(camera.y * MAP_TILES_Y - (0.5 * DISPLAY_SIZE_Y / tileSize));
+    const endRow = Math.ceil(camera.y * MAP_TILES_Y + (0.5 * DISPLAY_SIZE_Y / tileSize));
+    const offsetRow = camera.y * MAP_TILES_Y - 0.5 * DISPLAY_SIZE_Y / tileSize;
     for (let c = startCol; c < endCol; c++)
     {
         for (let r = startRow; r < endRow; r++)
         {
-            let tile = map.getTile(layer, c, r);
-            let displayX = Math.round((c - offsetCol) * tileSizeTarget);
-            let displayY = Math.round((r - offsetRow) * tileSizeTarget);
-            if (tile !== 0)
-            {
-                this.ctx.drawImage
-                (
-                    this.tileAtlas, // image
-                    (tile - 1) * tileSizeSource, // source x
-                    0, // source y
-                    tileSizeSource, // source width
-                    tileSizeSource, // source height
-                    displayX,  // target x
-                    displayY, // target y
-                    tileSizeTarget, // target width
-                    tileSizeTarget // target height
-                );
-            }
+            let displayX = Math.round((c - offsetCol) * tileSize);
+            let displayY = Math.round((r - offsetRow) * tileSize);
+            map.tiles.get(c, r).drawImages(this.ctx, displayX, displayY, tileSize, [this.tileAtlasTerrain, this.tileAtlasVegetation]);
         }
     }
 };

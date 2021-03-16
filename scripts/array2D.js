@@ -19,7 +19,7 @@ class Array2D
 	{
 		if (x >= this.sizeX || x < 0 || y >= this.sizeY || y < 0)
 		{
-			throw new Error('Slot is outside boundaries');
+			throw new Error('Slot (' + x + '/' + y + ') is outside boundaries (0-' + (this.sizeX - 1) + '/0-' + (this.sizeY - 1) + ')');
 		}
 	}
 

@@ -4,6 +4,8 @@
 
 const HEIGHT_MIN = -2000;  // In meters
 const HEIGHT_MAX = 4000;  // In meters
+const TILE_SIZE_TERRAIN = 64;
+const TILE_SIZE_VEGETATION = 64;
 
 const Climate = Object.freeze
 ({
@@ -201,6 +203,50 @@ _determineVegetation = function(height, climate, fertility)
 	}
 };
 
+_getTerrainImageData = function(terrain)
+{
+	switch (terrain)
+	{
+		case Terrain.water:
+			return [TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.earth:
+			return [TILE_SIZE_TERRAIN * 1, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.snow:
+			return [TILE_SIZE_TERRAIN * 2, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.ice:
+			return [TILE_SIZE_TERRAIN * 3, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.sand:
+			return [TILE_SIZE_TERRAIN * 4, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.swamp:
+			return [TILE_SIZE_TERRAIN * 5, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		case Terrain.cliff:
+			return [TILE_SIZE_TERRAIN * 6, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
+		default:
+			throw new Error('Invalid given terrain type (' + terrain + ')');
+	}
+}
+
+_getVegetationImageData = function(vegetation)
+{
+	switch (vegetation)
+	{
+		case Vegetation.trees:
+			return [TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		case Vegetation.shrubs:
+			return [TILE_SIZE_VEGETATION * 1, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		case Vegetation.grass:
+			return [TILE_SIZE_VEGETATION * 2, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		case Vegetation.bare:
+			return [TILE_SIZE_VEGETATION * 3, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		case Vegetation.gravel:
+			return [TILE_SIZE_VEGETATION * 4, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		case Vegetation.rocks:
+			return [TILE_SIZE_VEGETATION * 5, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
+		default:
+			throw new Error('Invalid given vegetation type (' + vegetation + ')');
+	}
+}
+
 
 // --------------------
 // Prototypes
@@ -223,13 +269,30 @@ class Tile
 		this._vegetation = _determineTerrain(this._height, this._climate, this._fertility);
 	}
 
-	get terrain()
+	get height()
 	{
-		return this._terrain;
+		return this._height;
 	}
 
-	get vegetation()
+	drawImages(ctx, displayX, displayY, tileSize, tileAtlases)
 	{
-		return this._vegetation;
+		this._drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], _getTerrainImageData(this._terrain));
+		this._drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], _getVegetationImageData(this._vegetation));
+	}
+
+	_drawImage(ctx, displayX, displayY, tileSize, tileAtlas, imageData)
+	{
+		ctx.drawImage
+		(
+			tileAtlas, // image
+			imageData[0], // source x
+			imageData[1], // source y
+			imageData[2], // source width
+			imageData[2], // source height
+			displayX,  // target x
+			displayY, // target y
+			tileSize, // target width
+			tileSize // target height
+		);
 	}
 }
