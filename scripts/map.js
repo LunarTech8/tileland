@@ -2,9 +2,9 @@
 // Data code
 // --------------------
 
-const MAP_PERLIN_NOISE_OCTAVES = 5;
-const MAP_TILES_X = 256;
-const MAP_TILES_Y = 256;
+const MAP_PERLIN_NOISE_OCTAVES = 6;
+const MAP_TILES_X = 512;
+const MAP_TILES_Y = 512;
 const CAMERA_SPEED_NORMAL = 0.1;
 const CAMERA_SPEED_FAST = CAMERA_SPEED_NORMAL * 3;
 const CAMERA_ZOOM_MIN = 0.1;
@@ -64,14 +64,14 @@ class Camera
         const tileSize = Math.round(DEFAULT_TILE_SIZE * this.zoom);
         const halfWidth = DISPLAY_SIZE_X / (2 * MAP_TILES_X * tileSize);
         const halfHeight = DISPLAY_SIZE_Y / (2 * MAP_TILES_Y * tileSize);
-        this.x = Math.max(halfWidth, Math.min(this.x, 1 - halfWidth));
-        this.y = Math.max(halfHeight, Math.min(this.y, 1 - halfHeight));
+        this.x = Utilities.clip(this.x, halfWidth, 1 - halfWidth);
+        this.y = Utilities.clip(this.y, halfHeight, 1 - halfHeight);
     }
 
     scale(delta)
     {
         const zoomMin = Math.max(DISPLAY_SIZE_X / (MAP_TILES_X * DEFAULT_TILE_SIZE), DISPLAY_SIZE_Y / (MAP_TILES_Y * DEFAULT_TILE_SIZE), CAMERA_ZOOM_MIN);
-        this.zoom = Math.min(Math.max(this.zoom * Math.exp(delta * CAMERA_ZOOM_SPEED), zoomMin), CAMERA_ZOOM_MAX);
+        this.zoom = Utilities.clip(this.zoom * Math.exp(delta * CAMERA_ZOOM_SPEED), zoomMin, CAMERA_ZOOM_MAX)
     }
 }
 

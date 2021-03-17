@@ -2,7 +2,7 @@
 // Data code
 // --------------------
 
-const HEIGHT_MIN = -2000;  // In meters
+const HEIGHT_MIN = -4000;  // In meters
 const HEIGHT_MAX = 4000;  // In meters
 const TILE_SIZE_TERRAIN = 64;
 const TILE_SIZE_VEGETATION = 64;
@@ -39,11 +39,12 @@ const Vegetation = Object.freeze
 
 _determineClimate = function(latitudeFactor)
 {
-	if (latitudeFactor >= 0.45 || latitudeFactor <= 0.55) { return Climate.hot; }
-	else if (latitudeFactor >= 0.35 || latitudeFactor <= 0.65) { return Climate.warm; }
-	else if (latitudeFactor >= 0.15 || latitudeFactor <= 0.85) { return Climate.mild; }
-	else if (latitudeFactor >= 0.05 || latitudeFactor <= 0.95) { return Climate.cold; }
-	else if (latitudeFactor >= 0.00 || latitudeFactor <= 1.00) { return Climate.icy; }
+	latitudeFactor = Utilities.clip(latitudeFactor + 0.05 * (Math.random() - 0.5), 0, 1);
+	if (latitudeFactor >= 0.45 && latitudeFactor <= 0.55) { return Climate.hot; }
+	else if (latitudeFactor >= 0.35 && latitudeFactor <= 0.65) { return Climate.warm; }
+	else if (latitudeFactor >= 0.15 && latitudeFactor <= 0.85) { return Climate.mild; }
+	else if (latitudeFactor >= 0.05 && latitudeFactor <= 0.95) { return Climate.cold; }
+	else if (latitudeFactor >= 0.00 && latitudeFactor <= 1.00) { return Climate.icy; }
 	else { throw new Error('Invalid given latitudeFactor (' + latitudeFactor + '), has to be between 0 and 1'); }
 };
 
@@ -266,7 +267,8 @@ class Tile
 		this._climate = _determineClimate(latitudeFactor);
 		this._fertility = _determineFertility(this._climate, this._height, fertilityNoise);
 		this._terrain = _determineTerrain(this._height, this._climate);
-		this._vegetation = _determineTerrain(this._height, this._climate, this._fertility);
+		this._vegetation = _determineVegetation(this._height, this._climate, this._fertility);
+		// console.log(this._height, this._climate, this._fertility, this._terrain, this._vegetation);
 	}
 
 	get height()

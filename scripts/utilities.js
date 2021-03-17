@@ -45,3 +45,14 @@ Utilities.interpolateLinear = function(min, max, value)
 	}
 	return number;
 }
+
+/**
+ * @param min Minimum target number.
+ * @param max Maximum target number.
+ * @param number Source number.
+ * @returns Clipped number between min and max.
+ */
+Utilities.clip = function(number, min, max)
+{
+	return Math.max(min, Math.min(number, max));
+}

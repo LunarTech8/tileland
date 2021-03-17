@@ -20,9 +20,8 @@ Work status:
 // Worklog:
 // -------------
 
-!!>- Implement functional map generation
-	- Adjust determine functions to output good maps
-	- Fix problems with maps generation (trees in water, too much rocky sand, etc.)
+!!- Add scaling function on height noise (parameterizable water part, parameterizable lowlands to mountains factor, etc.)
+!!- Scale perlin noise octaves based on map size
 
 
 // -------------
