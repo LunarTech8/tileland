@@ -20,15 +20,18 @@ Work status:
 // Worklog:
 // -------------
 
+!!>>- Add mouse click, hold and move for camera panning
+	- When leaving screen mouse should stop scrolling
 !!- Add scaling function on height noise (parameterizable water part, parameterizable lowlands to mountains factor, etc.)
 !!- Scale perlin noise octaves based on map size
+!- Maybe rename Keyboard to Inputs etc.
 
 
 // -------------
 // Backlog:
 // -------------
 
-!!- Add mouse click, hold and move for camera panning
+!!- Implement cards and a card hand
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
 
