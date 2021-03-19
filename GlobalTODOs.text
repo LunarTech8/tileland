@@ -20,17 +20,15 @@ Work status:
 // Worklog:
 // -------------
 
-!!>>- Add mouse click, hold and move for camera panning
-	- When leaving screen mouse should stop scrolling
 !!- Add scaling function on height noise (parameterizable water part, parameterizable lowlands to mountains factor, etc.)
 !!- Scale perlin noise octaves based on map size
-!- Maybe rename Keyboard to Inputs etc.
 
 
 // -------------
 // Backlog:
 // -------------
 
+!!!- Develope logic for cliff detection based on height difference to neighbouring tiles
 !!- Implement cards and a card hand
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
@@ -39,5 +37,5 @@ Work status:
 // Ideas/Concepts:
 // -------------
 
-!!- Develope logic for cliff detection based on height difference to neighbouring tiles
+!- Maybe rename Keyboard to Inputs etc.
 !- Maybe implement a humidity value for tiles based on distance to water and height that influences fertility etc.

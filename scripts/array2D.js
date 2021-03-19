@@ -17,7 +17,7 @@ class Array2D
 
 	_checkBoundaries(x, y)
 	{
-		if (x >= this.sizeX || x < 0 || y >= this.sizeY || y < 0)
+		if (!Utilities.isInRect([x, y], 0, 0, this.sizeX, this.sizeY))
 		{
 			throw new Error('Slot (' + x + '/' + y + ') is outside boundaries (0-' + (this.sizeX - 1) + '/0-' + (this.sizeY - 1) + ')');
 		}

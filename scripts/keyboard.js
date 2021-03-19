@@ -38,7 +38,6 @@ Keyboard.listenForMouse = function()
 {
     window.addEventListener('mousedown', function(){ this._mouse = true; }.bind(this));
     window.addEventListener('mouseup', function(){ this._mouse = false; }.bind(this));
-    window.addEventListener('mouseleave', function(){ this._mouse = false; }.bind(this));  // FIXME: doesn't seem to work
 }
 
 Keyboard.isKeyDown = function(keyCode)

@@ -106,7 +106,8 @@ Game.init = function()
     Keyboard.onMouseMove(function(event)
     {
         let newMousePos = [event.pageX, event.pageY];
-        if (Keyboard.isMouseDown())
+        let displayRect = Game.ctx.canvas.getBoundingClientRect();
+        if (Keyboard.isMouseDown() && Utilities.isInRect(Keyboard.mousePos, displayRect.left, displayRect.top, displayRect.right, displayRect.bottom))
         {
             event.preventDefault();
             camera.move(CAMERA_DRAG_FACTOR * (Keyboard.mousePos[0] - newMousePos[0]), CAMERA_DRAG_FACTOR * (Keyboard.mousePos[1] - newMousePos[1]));

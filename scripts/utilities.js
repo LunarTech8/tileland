@@ -56,3 +56,12 @@ Utilities.clip = function(number, min, max)
 {
 	return Math.max(min, Math.min(number, max));
 }
+
+/**
+ * @param pos Target position [x, y].
+ * @returns True if given pos is inside given rect coordinates.
+ */
+Utilities.isInRect = function(pos, minX, minY, maxX, maxY)
+{
+	return !(pos[0] < minX || pos[1] < minY || pos[0] >= maxX || pos[1] >= maxY)
+}
