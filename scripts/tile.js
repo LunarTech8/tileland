@@ -2,10 +2,12 @@
 // Data code
 // --------------------
 
-const HEIGHT_MIN = -4000;  // In meters
+const HEIGHT_MIN = -2000;  // In meters
 const HEIGHT_MAX = 4000;  // In meters
+const CLIFF_MIN_DIFF = 250;  // In meters
 const TILE_SIZE_TERRAIN = 64;
 const TILE_SIZE_VEGETATION = 64;
+const WATER_PERCENTAGE = 0.55;
 
 const Climate = Object.freeze
 ({
@@ -263,7 +265,14 @@ class Tile
 
 	constructor(heightNoise, fertilityNoise, latitudeFactor)
 	{
-		this._height = Utilities.interpolateLinear(HEIGHT_MIN, HEIGHT_MAX, heightNoise);
+		if (heightNoise <= WATER_PERCENTAGE)
+		{
+			this._height = Utilities.interpolateLinear(HEIGHT_MIN, 0, heightNoise / WATER_PERCENTAGE);
+		}
+		else
+		{
+			this._height = Utilities.interpolateLinear(0, HEIGHT_MAX, (heightNoise - WATER_PERCENTAGE) / (1 - WATER_PERCENTAGE));
+		}
 		this._climate = _determineClimate(latitudeFactor);
 		this._fertility = _determineFertility(this._climate, this._height, fertilityNoise);
 		this._terrain = _determineTerrain(this._height, this._climate);
@@ -271,10 +280,29 @@ class Tile
 		// console.log(this._height, this._climate, this._fertility, this._terrain, this._vegetation);
 	}
 
+	/**
+	 * @returns {number} _height
+	 */
 	get height()
 	{
 		return this._height;
 	}
+
+	/**
+	 * @param {Terrain} ter
+	 */
+	set terrain(ter)
+	{
+		this._terrain = ter;
+	}
+
+	/**
+	 * @param {Vegetation} veg
+	 */
+	 set vegetation(veg)
+	 {
+		 this._vegetation = veg;
+	 }
 
 	drawImages(ctx, displayX, displayY, tileSize, tileAtlases)
 	{

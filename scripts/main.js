@@ -28,6 +28,7 @@ class Map
     {
         this.cols = cols;
         this.rows = rows;
+        // Generate tiles:
         this.tiles = new Array2D(this.cols, this.rows);
         let heightNoise = Random.generatePerlinNoise(this.cols, this.rows, MAP_PERLIN_NOISE_OCTAVES);
         let fertilityNoise = Random.generatePerlinNoise(this.cols, this.rows, MAP_PERLIN_NOISE_OCTAVES);
@@ -36,6 +37,27 @@ class Map
             for (let r = 0; r < this.rows; r++)
             {
                 this.tiles.set(c, r, new Tile(heightNoise.get(c, r), fertilityNoise.get(c, r), r / this.rows));
+            }
+        }
+        // Determine cliffs:
+        for (let c = 1; c < this.cols - 1; c++)
+        {
+            for (let r = 1; r < this.rows - 1; r++)
+            {
+                let t = this.tiles.get(c, r);
+                if (t.height > 0)
+                {
+                    let hasCliff = false;
+                    if (Math.abs(t.height - this.tiles.get(c - 1, r).height) >= CLIFF_MIN_DIFF) { hasCliff = true; }
+                    else if (Math.abs(t.height - this.tiles.get(c + 1, r).height) >= CLIFF_MIN_DIFF) { hasCliff = true; }
+                    else if (Math.abs(t.height - this.tiles.get(c, r - 1).height) >= CLIFF_MIN_DIFF) { hasCliff = true; }
+                    else if (Math.abs(t.height - this.tiles.get(c, r + 1).height) >= CLIFF_MIN_DIFF) { hasCliff = true; }
+                    if (hasCliff)
+                    {
+                        t.terrain = Terrain.cliff;
+                        t.vegetation = Vegetation.bare;
+                    }
+                }
             }
         }
     }
