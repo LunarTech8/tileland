@@ -20,8 +20,8 @@ Work status:
 // Worklog:
 // -------------
 
-!!>>- Add scaling function on height noise (parameterizable water part, parameterizable lowlands to mountains factor, etc.)
 !!- Scale perlin noise octaves based on map size
+!- Implement height depiction
 
 
 // -------------

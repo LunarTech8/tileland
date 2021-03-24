@@ -8,6 +8,8 @@ const CLIFF_MIN_DIFF = 250;  // In meters
 const TILE_SIZE_TERRAIN = 64;
 const TILE_SIZE_VEGETATION = 64;
 const WATER_PERCENTAGE = 0.55;
+const FLATNESS_FACTOR_LOWLANDS = 0.2;  // 0 = No flattening, 1 = Max flattening towards lowlands
+const FLATNESS_FACTOR_HIGHLANDS = 0.2;  // 0 = No flattening, 1 = Max flattening towards highlands
 
 const Climate = Object.freeze
 ({
@@ -271,7 +273,7 @@ class Tile
 		}
 		else
 		{
-			this._height = Utilities.interpolateLinear(0, HEIGHT_MAX, (heightNoise - WATER_PERCENTAGE) / (1 - WATER_PERCENTAGE));
+			this._height = Utilities.interpolateCubic(0, HEIGHT_MAX, (heightNoise - WATER_PERCENTAGE) / (1 - WATER_PERCENTAGE), -HEIGHT_MAX * FLATNESS_FACTOR_LOWLANDS, HEIGHT_MAX + HEIGHT_MAX * FLATNESS_FACTOR_HIGHLANDS);
 		}
 		this._climate = _determineClimate(latitudeFactor);
 		this._fertility = _determineFertility(this._climate, this._height, fertilityNoise);

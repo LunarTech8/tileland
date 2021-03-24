@@ -7,31 +7,65 @@ var Utilities = {};
 /**
  * @param min Minimum target float value.
  * @param max Maximum target float value.
- * @param value Float value between 0 and 1.
- * @returns Linear interpolated value between min and max based on given value.
+ * @param alpha Float value between 0 and 1.
+ * @returns Linear interpolated value between min and max based on given alpha.
  */
-Utilities.interpolateLinear = function(min, max, value)
+Utilities.interpolateLinear = function(min, max, alpha)
 {
-	if (value < 0 || value > 1)
+	if (alpha < 0 || alpha > 1)
 	{
-		throw new Error('Invalid given value (' + value + '), has to be between 0 and 1');
+		throw new Error('Invalid given value (' + alpha + '), has to be between 0 and 1');
 	}
-	return min + (max - min) * value;
+	return min + (max - min) * alpha;
 }
 
 /**
  * @param min Minimum target int value.
  * @param max Maximum target int value.
- * @param value Float value between 0 and 1.
- * @returns Linear interpolated integer value between min and max based on given value.
+ * @param alpha Float value between 0 and 1.
+ * @returns Linear interpolated integer value between min and max based on given alpha.
  */
- Utilities.interpolateLinearInt = function(min, max, value)
+ Utilities.interpolateLinearInt = function(min, max, alpha)
  {
-	if (value < 0 || value > 1)
+	if (alpha < 0 || alpha > 1)
 	{
-		throw new Error('Invalid given value (' + value + '), has to be between 0 and 1');
+		throw new Error('Invalid given value (' + alpha + '), has to be between 0 and 1');
 	}
-	 return min + Math.floor((max - min + 1) * value);
+	 return min + Math.floor((max - min + 1) * alpha);
+ }
+
+/**
+ * @param min Minimum target float value.
+ * @param max Maximum target float value.
+ * @param alpha Float value between 0 and 1.
+ * @returns Cosine interpolated value between min and max based on given alpha.
+ */
+Utilities.interpolateCosine = function(min, max, alpha)
+{
+	if (alpha < 0 || alpha > 1)
+	{
+		throw new Error('Invalid given value (' + alpha + '), has to be between 0 and 1');
+	}
+	alpha = (1 - Math.cos(alpha * Math.PI)) * 0.5;
+	return min + (max - min) * alpha;
+}
+
+/**
+ * @param min Minimum target float value.
+ * @param max Maximum target float value.
+ * @param alpha Float value between 0 and 1.
+ * @param sampleA First sampling point.
+ * @param sampleB Second sampling point.
+ * @returns Cubic interpolated value between min and max based on given alpha and sampling points.
+ */
+ Utilities.interpolateCubic = function(min, max, alpha, sampleA, sampleB)
+ {
+	if (alpha < 0 || alpha > 1)
+	{
+		throw new Error('Invalid given value (' + alpha + '), has to be between 0 and 1');
+	}
+	let f = (sampleB - max) - (sampleA - min);
+	return f * Math.pow(alpha, 3) + ((sampleA - min) - f) * Math.pow(alpha, 2) + (max - min) * alpha + min;
  }
 
 /**
