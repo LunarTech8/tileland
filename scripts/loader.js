@@ -2,7 +2,9 @@
 // Functional code
 // ----------------
 
-var Loader = {images: {}};
+var Loader = {};
+
+Loader._images = {};
 
 Loader.loadImage = function(key, src)
 {
@@ -11,7 +13,7 @@ Loader.loadImage = function(key, src)
     {
         img.onload = function()
         {
-            this.images[key] = img;
+            this._images[key] = img;
             resolve(img);
         }.bind(this);
 
@@ -23,5 +25,5 @@ Loader.loadImage = function(key, src)
 
 Loader.getImage = function(key)
 {
-    return (key in this.images) ? this.images[key] : null;
+    return (key in this._images) ? this._images[key] : null;
 };

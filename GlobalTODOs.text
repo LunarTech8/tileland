@@ -20,15 +20,40 @@ Work status:
 // Worklog:
 // -------------
 
-!!- Scale perlin noise octaves based on map size
-!- Implement height depiction
+!!!>>- Create basic elements
+	>>- Settlements
+		- Founded by Village Square
+		- All buidlings have to be connected to it via linked adjacency
+		- Different levels (homestead, village, town, city, metropolis, ...) based on size and required buildings
+	- Buildings
+		- Buildings costs (resources, time and workers)
+		- Building requirements (settlement type, other buildings, adjacency)
+	- Workers
+		- Local per settlement
+		- Relocatable each turn (from one building to another inside the settlement)
+	- Resources
+		- Local per settlement or transporting unit group
+	- Cards
+		- Houses (Peasant, Artisan, Patrician)
+		- Resource buildings (Farm, Mine, ...)
+		- Production buildings (Mill, Bakery, Blacksmiths, ...)
+		- Public buildings (Library, Tavern, Church, ...)
+		- Units (Archer, Swordsman, Jester, Trader, ...)
+		- Events (Festival, ...)
+!!>- Create Settings object where values for map settings etc. is stored
+	- Have different settings sets (eg. one for testing with small map)
 
 
 // -------------
 // Backlog:
 // -------------
 
-!!- Implement cards and a card hand
+!!- Develope better cliffs
+	- Have a cliff border to each side with a minimum height gradient
+	- Cliff border type is depandant on height gradient (small earthen, medium rocky, large rocky, ...)
+	- Buildings can't be placed on tiles with medium border type but units can still traverse them
+	- Buildings and units can't be placed on tiles with large border type
+!!- Scale perlin noise octaves based on map size
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
 
@@ -36,6 +61,6 @@ Work status:
 // Ideas/Concepts:
 // -------------
 
-!!- Develope better cliffs
-!- Maybe rename Keyboard to Inputs etc.
-!- Maybe implement a humidity value for tiles based on distance to water and height that influences fertility etc.
+!- Rename Keyboard to Inputs etc.
+!- Refactor Map and Camera into own js files
+!- Implement a humidity value for tiles based on distance to water and height that influences fertility etc.

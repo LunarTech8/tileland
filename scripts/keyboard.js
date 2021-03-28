@@ -1,6 +1,6 @@
-// ----------------
-// Functional code
-// ----------------
+// --------------------
+// Data code
+// --------------------
 
 var Keyboard = {};
 
@@ -13,6 +13,12 @@ Keyboard.W = 87;
 Keyboard.A = 65;
 Keyboard.S = 83;
 Keyboard.D = 68;
+
+
+// ----------------
+// Functional code
+// ----------------
+
 Keyboard.mousePos = [0, 0];
 Keyboard._keys = {};
 Keyboard._mouse = false;
