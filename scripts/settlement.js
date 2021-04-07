@@ -11,7 +11,7 @@ class Settlement
 		VILLAGE: 2,
 		TOWN: 3,
 		CITY: 4,
-		METROPOLIS: 5
+		METROPOLIS: 5,
 	});
 
 

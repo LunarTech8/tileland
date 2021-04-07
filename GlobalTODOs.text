@@ -40,8 +40,9 @@ Work status:
 		- Public buildings (Library, Tavern, Church, ...)
 		- Units (Archer, Swordsman, Jester, Trader, ...)
 		- Events (Festival, ...)
-!!>- Create Settings object where values for map settings etc. is stored
-	- Have different settings sets (eg. one for testing with small map)
+!!>>- Create Settings object where values for map settings etc. is stored
+	>>- Define different map type settings
+	>>- Define different map size settings
 
 
 // -------------
@@ -53,7 +54,6 @@ Work status:
 	- Cliff border type is depandant on height gradient (small earthen, medium rocky, large rocky, ...)
 	- Buildings can't be placed on tiles with medium border type but units can still traverse them
 	- Buildings and units can't be placed on tiles with large border type
-!!- Scale perlin noise octaves based on map size
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
 

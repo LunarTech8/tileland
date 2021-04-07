@@ -4,14 +4,8 @@ class Tile
 	// Data code
 	// --------------------
 
-	static HEIGHT_MIN = -2000;  // In meters
-	static HEIGHT_MAX = 4000;  // In meters
-	static CLIFF_MIN_DIFF = 250;  // In meters
 	static TILE_SIZE_TERRAIN = 64;
 	static TILE_SIZE_VEGETATION = 64;
-	static WATER_PERCENTAGE = 0.55;
-	static FLATNESS_FACTOR_LOWLANDS = 0.2;  // 0 = No flattening, 1 = Max flattening towards lowlands
-	static FLATNESS_FACTOR_HIGHLANDS = 0.2;  // 0 = No flattening, 1 = Max flattening towards highlands
 
 	static Climate = Object.freeze
 	({
@@ -80,9 +74,9 @@ class Tile
 
 	static _determineTerrain = function(height, climate)
 	{
-		if (height < Tile.HEIGHT_MIN || height > Tile.HEIGHT_MAX)
+		if (height < Main.settings.heightMin || height > Main.settings.heightMax)
 		{
-			throw new Error('Invalid given height (' + height + '), has to be between ' + Tile.HEIGHT_MIN + ' and ' + Tile.HEIGHT_MAX);
+			throw new Error('Invalid given height (' + height + '), has to be between ' + Main.settings.heightMin + ' and ' + Main.settings.heightMax);
 		}
 		if (height <= 0)
 		{
@@ -267,13 +261,13 @@ class Tile
 
 	constructor(heightNoise, fertilityNoise, latitudeFactor)
 	{
-		if (heightNoise <= Tile.WATER_PERCENTAGE)
+		if (heightNoise <= Main.settings.waterPercentage)
 		{
-			this._height = Utilities.interpolateLinear(Tile.HEIGHT_MIN, 0, heightNoise / Tile.WATER_PERCENTAGE);
+			this._height = Utilities.interpolateLinear(Main.settings.heightMin, 0, heightNoise / Main.settings.waterPercentage);
 		}
 		else
 		{
-			this._height = Utilities.interpolateCubic(0, Tile.HEIGHT_MAX, (heightNoise - Tile.WATER_PERCENTAGE) / (1 - Tile.WATER_PERCENTAGE), -Tile.HEIGHT_MAX * Tile.FLATNESS_FACTOR_LOWLANDS, Tile.HEIGHT_MAX + Tile.HEIGHT_MAX * Tile.FLATNESS_FACTOR_HIGHLANDS);
+			this._height = Utilities.interpolateCubic(0, Main.settings.heightMax, (heightNoise - Main.settings.waterPercentage) / (1 - Main.settings.waterPercentage), -Main.settings.heightMax * Main.settings.flatnessFactorLowlands, Main.settings.heightMax + Main.settings.heightMax * Main.settings.flatnessFactorHighlands);
 		}
 		this._climate = Tile._determineTileClimate(latitudeFactor);
 		this._fertility = Tile._determineFertility(this._climate, this._height, fertilityNoise);
