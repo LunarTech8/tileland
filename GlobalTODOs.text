@@ -21,11 +21,11 @@ Work status:
 // -------------
 
 !!!>>- Create basic elements
-	>>- Settlements
+	>>>- Settlements
 		- Founded by Village Square
 		- All buidlings have to be connected to it via linked adjacency
 		- Different levels (homestead, village, town, city, metropolis, ...) based on size and required buildings
-	- Buildings
+	>>- Buildings
 		- Buildings costs (resources, time and workers)
 		- Building requirements (settlement type, other buildings, adjacency)
 	- Workers
