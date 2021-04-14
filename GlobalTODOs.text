@@ -26,12 +26,12 @@ Work status:
 		- All buidlings have to be connected to it via linked adjacency
 		- Different levels (homestead, village, town, city, metropolis, ...) based on size and required buildings
 	>>- Buildings
-		- Buildings costs (resources, time and workers)
+		- Buildings costs (wares, time and workers)
 		- Building requirements (settlement type, other buildings, adjacency)
 	- Workers
 		- Local per settlement
 		- Relocatable each turn (from one building to another inside the settlement)
-	- Resources
+	- Wares
 		- Local per settlement or transporting unit group
 	- Cards
 		- Houses (Peasant, Artisan, Patrician)
