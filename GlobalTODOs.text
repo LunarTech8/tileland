@@ -20,6 +20,7 @@ Work status:
 // Worklog:
 // -------------
 
+!!!>- Create UnitTest class for testing
 !!!>>- Create basic elements
 	>>>- Settlements
 		- Founded by Village Square
@@ -31,7 +32,7 @@ Work status:
 	- Workers
 		- Local per settlement
 		- Relocatable each turn (from one building to another inside the settlement)
-	- Wares
+	>>- Wares
 		- Local per settlement or transporting unit group
 	- Cards
 		- Houses (Peasant, Artisan, Patrician)

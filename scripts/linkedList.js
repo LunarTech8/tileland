@@ -31,10 +31,44 @@ class LinkedList
 		this._tail = head;
 	}
 
+	[Symbol.iterator]()
+	{
+		let currentNode = this._head;
+		let nextFunc = function()
+		{
+			if (currentNode != null)
+			{
+				let retVal = { value: currentNode, done: false };
+				currentNode = currentNode.next;
+				return retVal;
+			}
+			else
+			{
+				return { done: true }
+			}
+		};
+		return { next: nextFunc() }
+	}
+
+	get(index)
+	{
+		let targetNode = this._head;
+		for (let i = 0; i < index; i++)
+		{
+			targetNode = targetNode.next;
+		}
+		return targetNode;
+	}
+
 	push(data)
 	{
 		this._tail.next = new Node(data, this._tail);
 		this._tail = this._tail.next;
+	}
+
+	add(data)
+	{
+		this.push(data);
 	}
 
 	pop()
@@ -43,6 +77,11 @@ class LinkedList
 		this._tail = this._tail.prev;
 		this._tail.next = null;
 		return lastNode;
+	}
+
+	peek()
+	{
+		return this._tail;
 	}
 
 	size()
