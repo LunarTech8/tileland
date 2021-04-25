@@ -1,4 +1,4 @@
-class Node
+class ListNode
 {
 	// --------------------
 	// Functional code
@@ -62,7 +62,7 @@ class LinkedList
 
 	push(data)
 	{
-		this._tail.next = new Node(data, this._tail);
+		this._tail.next = new ListNode(data, this._tail);
 		this._tail = this._tail.next;
 	}
 
