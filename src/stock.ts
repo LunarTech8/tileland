@@ -1,8 +1,11 @@
+import {LinkedList} from '../src/linkedList';
+
+
 // --------------------
 // Functional code
 // --------------------
 
-class Ware
+export class Ware
 {
 	public wareType: Ware.WareType;
 	public count: number;
@@ -19,16 +22,12 @@ class Ware
 	}
 }
 
-class Stock
+export class Stock
 {
 	private wares: LinkedList<Ware>;
 
 	constructor(wares: LinkedList<Ware>)
 	{
-		if (wares instanceof LinkedList == false)
-		{
-			throw new Error('Invalid type for parameter "wares" (has to be of class LinkedList)');
-		}
 		this.wares = wares;
 	}
 
@@ -116,11 +115,12 @@ class Stock
 	// TODO: continue implementation
 }
 
+
 // --------------------
 // Data code
 // --------------------
 
-namespace Ware
+export namespace Ware
 {
 	export enum WareType
 	{
@@ -133,36 +133,5 @@ namespace Ware
 		WOODEN_BOARDS = "wooden boards",
 		WOODEN_STICKS = "wooden sticks",
 		STRAW = "straw"
-	}
-}
-
-// --------------------
-// Test code
-// --------------------
-
-namespace Ware
-{
-	export function addAndRemove()
-	{
-		// FIXME: implement UnitTest class with assert functions and create test command that calls this function
-		let testName = setTestName("StockTest.addAndRemove")
-		// Create new stock and check content:
-		let stockA = new Stock(new LinkedList());
-		stockA.isEmpty().assertTrue(testName);
-		stockA.getAmountOfWareTypes().assertEquals(testName, 0);
-		// Add wares and check content:
-		stockA.addWare(new Ware(Ware.WareType.FOOD, 2));
-		stockA.addWare(new Ware(Ware.WareType.STONE, 2));
-		stockA.addWare(new Ware(Ware.WareType.STRAW, 1));
-		stockA.addWare(new Ware(Ware.WareType.FOOD, 1));
-		stockA.isEmpty().assertFalse(testName);
-		stockA.getAmountOfWareTypes().assertEquals(testName, 3);
-		stockA.getWareCount(Ware.WareType.FOOD).assertEquals(testName, 3);
-		(stockA.getLastWare().wareType == Ware.WareType.STRAW).assertTrue(testName);
-		(stockA.getWare(0).wareType == Ware.WareType.FOOD).assertTrue(testName);
-		(stockA.getWare(1).wareType == Ware.WareType.STONE).assertTrue(testName);
-		stockA.hasWare(new Ware(Ware.WareType.STONE, 3)).assertFalse(testName);
-		stockA.hasWare(new Ware(Ware.WareType.STONE, 2)).assertTrue(testName);
-		// TODO: continue implementation
 	}
 }

@@ -8,7 +8,7 @@ class ListNode<T>
 	public prev: ListNode<T>;
 	public next: ListNode<T>;
 
-	constructor(data: T, prev = null, next = null)
+	constructor(data: T, prev: ListNode<T> = null, next: ListNode<T> = null)
 	{
 		this.data = data;
 		this.prev = prev;
@@ -16,25 +16,32 @@ class ListNode<T>
 	}
 }
 
-class LinkedList<T> implements IterableIterator<T>
+export class LinkedList<T> implements IterableIterator<T>
 {
 	private head: ListNode<T>;
 	private tail: ListNode<T>;
+	private iNode: ListNode<T>;
 
-	constructor(head = null)
+	constructor(data: T = null)
 	{
-		this.head = head;
-		this.tail = head;
+		if (data != null)
+		{
+			this.head = new ListNode<T>(data);
+		}
+		else
+		{
+			this.head = null;
+		}
+		this.tail = this.head;
 	}
 
 	public next(): IteratorResult<T>
 	{
-		var currentNode = this.head;  // TODO: check if this works properly
-		if (currentNode != null)
+		if (this.iNode != null)
 		{
-			let retVal = { value: currentNode.data, done: false };
-			currentNode = currentNode.next;
-			return retVal;
+			let data = this.iNode.data;
+			this.iNode = this.iNode.next;
+			return { value: data, done: false };
 		}
 		else
 		{
@@ -44,6 +51,7 @@ class LinkedList<T> implements IterableIterator<T>
 
 	[Symbol.iterator](): IterableIterator<T>
 	{
+		this.iNode = this.head;
 		return this;
 	}
 
@@ -59,8 +67,16 @@ class LinkedList<T> implements IterableIterator<T>
 
 	public push(data: T)
 	{
-		this.tail.next = new ListNode(data, this.tail);
-		this.tail = this.tail.next;
+		if (this.tail != null)
+		{
+			this.tail.next = new ListNode<T>(data, this.tail);
+			this.tail = this.tail.next;
+		}
+		else
+		{
+			this.head = new ListNode<T>(data);
+			this.tail = this.head;
+		}
 	}
 
 	public add(data: T)
@@ -72,20 +88,30 @@ class LinkedList<T> implements IterableIterator<T>
 	{
 		let lastNode = this.tail;
 		this.tail = this.tail.prev;
-		this.tail.next = null;
+		if (this.tail != null)
+		{
+			this.tail.next = null;
+		}
 		return lastNode.data;
 	}
 
 	public peek(): T
 	{
-		return this.tail.data;
+		if (this.tail != null)
+		{
+			return this.tail.data;
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 	public size(): number
 	{
 		let count = 0;
 		let node = this.head;
-		while (node)
+		while (node != null)
 		{
 			count++;
 			node = node.next;

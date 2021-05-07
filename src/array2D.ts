@@ -1,9 +1,9 @@
+// --------------------
+// Functional code
+// --------------------
+
 class Array2D<T>
 {
-	// --------------------
-	// Functional code
-	// --------------------
-
 	public data: T[];
 	public sizeX: number;
 	public sizeY: number;

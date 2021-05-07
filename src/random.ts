@@ -77,7 +77,7 @@ namespace Random
 	 * Available interpolations: Linear, Cosine
 	 * Available distributions: Default = "Bell shaped", Slope = "Half bell shaped, peak at 0", Uniform = "Evenly distributed, no peak"
 	 */
-	export function generatePerlinNoise(width: number, height: number, octaveCount: number, persistance = .5, interpolation = "Linear", distribution = "Default"): Array2D<number>
+	export function generatePerlinNoise(width: number, height: number, octaveCount: number, persistance: number = .5, interpolation: string = "Linear", distribution: string = "Default"): Array2D<number>
 	{
 		let perlinNoise: Array2D<number>;
 		if (octaveCount > 1)

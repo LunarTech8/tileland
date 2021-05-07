@@ -1,3 +1,6 @@
+import { Stock } from "./stock";
+
+
 // --------------------
 // Functional code
 // --------------------
@@ -25,6 +28,7 @@ class Settlement
 		this.adjustLevel();
 	}
 }
+
 
 // --------------------
 // Data code
