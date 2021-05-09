@@ -84,6 +84,42 @@ export class LinkedList<T> implements IterableIterator<T>
 		this.push(data);
 	}
 
+	public remove(data: T): boolean
+	{
+		let iNode: ListNode<T> = new ListNode<T>(null, null, this.head);
+		while (iNode.next != null)
+		{
+			iNode = iNode.next;
+			if (iNode.data == data)
+			{
+				if (iNode == this.head)
+				{
+					this.head = iNode.next;
+					if (this.head == null)
+					{
+						this.tail = null;
+					}
+					else
+					{
+						this.head.prev = null;
+					}
+				}
+				else if (iNode == this.tail)
+				{
+					this.tail = iNode.prev;
+					this.tail.next = null;
+				}
+				else
+				{
+					iNode.prev.next = iNode.next;
+					iNode.next.prev = iNode.prev;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public pop(): T
 	{
 		let lastNode = this.tail;

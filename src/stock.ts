@@ -80,8 +80,40 @@ export class Stock
 			if (iWare.hasSameType(ware))
 			{
 				// Check ware:
-				if (iWare.count >= ware.count) { return true; }
-				else { return false; }
+				if (iWare.count >= ware.count)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** Returns if the stock has the given wares. */
+	public hasWares(wares: LinkedList<Ware>): boolean
+	{
+		for (let iWare of wares)
+		{
+			if (this.hasWare(iWare) == false)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Returns if the stock has any of the given wares. */
+	public hasWaresAny(wares: LinkedList<Ware>): boolean
+	{
+		for (let iWare of wares)
+		{
+			if (this.getWareCount(iWare.wareType) > 0)
+			{
+				return true;
 			}
 		}
 		return false;
@@ -112,7 +144,47 @@ export class Stock
 		}
 	}
 
-	// TODO: continue implementation
+	/** Remove given ware from the stock. */
+	public removeWare(w: Ware)
+	{
+		for (let iWare of this.wares)
+		{
+			if (iWare.hasSameType(w))
+			{
+				// Check and adjust ware:
+				if (iWare.count <= w.count)
+				{
+					this.wares.remove(iWare);
+				}
+				else
+				{
+					iWare.count -= w.count;
+				}
+			}
+		}
+	}
+
+	/** Remove given wares from the stock. */
+	public removeWares(wares: LinkedList<Ware>)
+	{
+		for (let iWare of wares)
+		{
+			this.removeWare(iWare);
+		}
+	}
+
+	/** Returns if the stock has any wares of given target stock. */
+	public containsAny(targetStock: Stock): boolean
+	{
+		for (let iWare of this.wares)
+		{
+			if (targetStock.getWareCount(iWare.wareType) > 0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
 
