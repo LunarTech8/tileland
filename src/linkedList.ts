@@ -8,7 +8,7 @@ class ListNode<T>
 	public prev: ListNode<T>;
 	public next: ListNode<T>;
 
-	constructor(data: T, prev: ListNode<T> = null, next: ListNode<T> = null)
+	constructor(data: T, prev: ListNode<T>, next: ListNode<T>)
 	{
 		this.data = data;
 		this.prev = prev;
@@ -18,46 +18,47 @@ class ListNode<T>
 
 export class LinkedList<T> implements IterableIterator<T>
 {
-	private head: ListNode<T>;
-	private tail: ListNode<T>;
+	private readonly head: ListNode<T>;
+	private readonly tail: ListNode<T>;
 	private iNode: ListNode<T>;
 
 	constructor(data: T = null)
 	{
+		this.head = new ListNode<T>(null, null, null);
+		this.tail = new ListNode<T>(null, null, null);
 		if (data != null)
 		{
-			this.head = new ListNode<T>(data);
+			let newNode = new ListNode<T>(data, this.head, this.tail);
+			this.head.next = newNode;
+			this.tail.prev = newNode;
 		}
 		else
 		{
-			this.head = null;
+			this.head.next = this.tail;
+			this.tail.prev = this.head;
 		}
-		this.tail = this.head;
 	}
 
 	public next(): IteratorResult<T>
 	{
-		if (this.iNode != null)
-		{
-			let data = this.iNode.data;
-			this.iNode = this.iNode.next;
-			return { value: data, done: false };
-		}
-		else
+		if (this.iNode == this.tail)
 		{
 			return { value: null, done: true };
 		}
+		let data = this.iNode.data;
+		this.iNode = this.iNode.next;
+		return { value: data, done: false };
 	}
 
 	[Symbol.iterator](): IterableIterator<T>
 	{
-		this.iNode = this.head;
+		this.iNode = this.head.next;
 		return this;
 	}
 
 	public get(index: number): T
 	{
-		let targetNode = this.head;
+		let targetNode = this.head.next;
 		for (let i = 0; i < index; i++)
 		{
 			targetNode = targetNode.next;
@@ -67,16 +68,9 @@ export class LinkedList<T> implements IterableIterator<T>
 
 	public push(data: T)
 	{
-		if (this.tail != null)
-		{
-			this.tail.next = new ListNode<T>(data, this.tail);
-			this.tail = this.tail.next;
-		}
-		else
-		{
-			this.head = new ListNode<T>(data);
-			this.tail = this.head;
-		}
+		let newNode = new ListNode<T>(data, this.tail.prev, this.tail);
+		this.tail.prev.next = newNode;
+		this.tail.prev = newNode;
 	}
 
 	public add(data: T)
@@ -86,34 +80,14 @@ export class LinkedList<T> implements IterableIterator<T>
 
 	public remove(data: T): boolean
 	{
-		let iNode: ListNode<T> = new ListNode<T>(null, null, this.head);
-		while (iNode.next != null)
+		let iNode = this.head;
+		while (iNode.next != this.tail)
 		{
 			iNode = iNode.next;
 			if (iNode.data == data)
 			{
-				if (iNode == this.head)
-				{
-					this.head = iNode.next;
-					if (this.head == null)
-					{
-						this.tail = null;
-					}
-					else
-					{
-						this.head.prev = null;
-					}
-				}
-				else if (iNode == this.tail)
-				{
-					this.tail = iNode.prev;
-					this.tail.next = null;
-				}
-				else
-				{
-					iNode.prev.next = iNode.next;
-					iNode.next.prev = iNode.prev;
-				}
+				iNode.prev.next = iNode.next;
+				iNode.next.prev = iNode.prev;
 				return true;
 			}
 		}
@@ -122,42 +96,38 @@ export class LinkedList<T> implements IterableIterator<T>
 
 	public pop(): T
 	{
-		let lastNode = this.tail;
-		this.tail = this.tail.prev;
-		if (this.tail != null)
+		if (this.tail.prev == this.head)
 		{
-			this.tail.next = null;
+			return null;
 		}
+		let lastNode = this.tail.prev;
+		lastNode.prev.next = this.tail;
+		this.tail.prev = lastNode.prev;
 		return lastNode.data;
 	}
 
 	public peek(): T
 	{
-		if (this.tail != null)
-		{
-			return this.tail.data;
-		}
-		else
+		if (this.tail.prev == this.head)
 		{
 			return null;
 		}
+		return this.tail.prev.data;
 	}
 
 	public size(): number
 	{
 		let count = 0;
-		let node = this.head;
-		while (node != null)
+		for (let iNode = this.head.next; iNode != this.tail; count++)
 		{
-			count++;
-			node = node.next;
+			iNode = iNode.next;
 		}
 		return count;
 	}
 
 	public clear()
 	{
-		this.head = null;
-		this.tail = null;
+		this.head.next = this.tail;
+		this.tail.prev = this.head;
 	}
 }
