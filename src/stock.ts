@@ -1,4 +1,4 @@
-import {LinkedList} from '../src/linkedList';
+import { LinkedList } from '../src/linkedList';
 
 
 // --------------------
@@ -7,10 +7,10 @@ import {LinkedList} from '../src/linkedList';
 
 export class Ware
 {
-	public wareType: Ware.WareType;
+	public wareType: Ware.Type;
 	public count: number;
 
-	constructor(wareType: Ware.WareType, count: number)
+	constructor(wareType: Ware.Type, count: number)
 	{
 		this.wareType = wareType;
 		this.count = count;
@@ -60,7 +60,7 @@ export class Stock
 	}
 
 	/** Returns count of given ware type. */
-	public getWareCount(wareType: Ware.WareType): number
+	public getWareCount(wareType: Ware.Type): number
 	{
 		for (let iWare of this.wares)
 		{
@@ -194,7 +194,7 @@ export class Stock
 
 export namespace Ware
 {
-	export enum WareType
+	export enum Type
 	{
 		WOOD = "wood",
 		STONE = "stone",
@@ -204,6 +204,6 @@ export namespace Ware
 		COAL = "coal",
 		WOODEN_BOARDS = "wooden boards",
 		WOODEN_STICKS = "wooden sticks",
-		STRAW = "straw"
+		STRAW = "straw",
 	}
 }

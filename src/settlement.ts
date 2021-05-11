@@ -1,3 +1,4 @@
+import { Building } from "./building";
 import { Stock } from "./stock";
 
 
@@ -42,7 +43,7 @@ namespace Settlement
 		VILLAGE,
 		TOWN,
 		CITY,
-		METROPOLIS
+		METROPOLIS,
 	}
 
 	export function determineLevel(buildingCount: number): Level

@@ -2,30 +2,53 @@
 class Settings
 {
 	// --------------------
-	// Data code
+	// Functional code
 	// --------------------
 
-	static MapType = Object.freeze
-	({
-		TEST: 1,
-		SMALL_CONTINENTS: 2,
-		LARGE_CONTINENTS: 3,
-		ARCHIPELAGOS: 4,
-		PANGAEA: 5,
-		CENTRAL_OCEAN: 6,
-		CENTRAL_DESERT: 7,
-	});
+	heightMin: number;  // In meters
+	heightMax: number;  // In meters
+	cliffMinDiff: number;  // In meters
+	waterPercentage: number;
+	flatnessFactorLowlands: number;  // 0 = No flattening, 1 = Max flattening towards lowlands
+	flatnessFactorHighlands: number;  // 0 = No flattening, 1 = Max flattening towards highlands
+	mapPerlinNoiseOctaves: number;
+	mapTilesX: number;
+	mapTilesY: number;
 
-	static MapSize = Object.freeze
-	({
-		TINY: 1,
-		SMALL: 2,
-		MEDIUM: 3,
-		LARGE: 4,
-		HUGE: 5,
-	});
+	constructor(mapType: Settings.MapType, mapSize: Settings.MapSize)
+	{
+		Settings.setSettingValues(this, mapType, mapSize);
+	}
+}
 
-	static _setSettingValues = function(settings, mapType, mapSize)
+
+// --------------------
+// Data code
+// --------------------
+
+namespace Settings
+{
+	export enum MapType
+	{
+		TEST,
+		SMALL_CONTINENTS,
+		LARGE_CONTINENTS,
+		ARCHIPELAGOS,
+		PANGAEA,
+		CENTRAL_OCEAN,
+		CENTRAL_DESERT,
+	}
+
+	export enum MapSize
+	{
+		TINY,
+		SMALL,
+		MEDIUM,
+		LARGE,
+		HUGE,
+	}
+
+	export function setSettingValues(settings: Settings, mapType: MapType, mapSize: MapSize)
 	{
 		switch (mapType)
 		{
@@ -56,7 +79,7 @@ class Settings
 				settings.mapTilesX = 64;
 				settings.mapTilesY = 64;
 				break;
-				case Settings.MapSize.MEDIUM:
+			case Settings.MapSize.MEDIUM:
 				settings.mapPerlinNoiseOctaves = 6;
 				settings.mapTilesX = 512;
 				settings.mapTilesY = 512;
@@ -65,25 +88,5 @@ class Settings
 			default:
 				throw new Error('Invalid given map size (' + mapSize + ')');
 		}
-	};
-
-
-	// --------------------
-	// Functional code
-	// --------------------
-
-	heightMin;  // In meters
-	heightMax;  // In meters
-	cliffMinDiff;  // In meters
-	waterPercentage;
-	flatnessFactorLowlands;  // 0 = No flattening, 1 = Max flattening towards lowlands
-	flatnessFactorHighlands;  // 0 = No flattening, 1 = Max flattening towards highlands
-	mapPerlinNoiseOctaves;
-	mapTilesX;
-	mapTilesY;
-
-	constructor(mapType, mapSize)
-	{
-		Settings._setSettingValues(this, mapType, mapSize);
 	}
 }
