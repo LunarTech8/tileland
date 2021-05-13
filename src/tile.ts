@@ -1,43 +1,120 @@
+// --------------------
+// Functional code
+// --------------------
+
 class Tile
 {
-	// --------------------
-	// Data code
-	// --------------------
+	private height: number;
+	private climate: Tile.Climate;
+	private fertility: number;
+	private terrain: Tile.Terrain;
+	private vegetation: Tile.Vegetation;
 
-	static TILE_SIZE_TERRAIN = 64;
-	static TILE_SIZE_VEGETATION = 64;
+	constructor(heightNoise: number, fertilityNoise: number, latitudeFactor: number)
+	{
+		if (heightNoise <= Main.Settings.waterPercentage)
+		{
+			this.height = Utilities.interpolateLinear(Main.Settings.heightMin, 0, heightNoise / Main.Settings.waterPercentage);
+		}
+		else
+		{
+			this.height = Utilities.interpolateCubic(0, Main.Settings.heightMax, (heightNoise - Main.Settings.waterPercentage) / (1 - Main.Settings.waterPercentage), -Main.Settings.heightMax * Main.Settings.flatnessFactorLowlands, Main.Settings.heightMax + Main.Settings.heightMax * Main.Settings.flatnessFactorHighlands);
+		}
+		this.climate = Tile.determineTileClimate(latitudeFactor);
+		this.fertility = Tile.determineFertility(this.climate, this.height, fertilityNoise);
+		this.terrain = Tile.determineTerrain(this.height, this.climate);
+		this.vegetation = Tile.determineVegetation(this.height, this.climate, this.fertility);
+		// console.log(this._height, this._climate, this._fertility, this._terrain, this._vegetation);
+	}
 
-	static Climate = Object.freeze
-	({
-		ICY: 1,
-		COLD: 2,
-		MILD: 3,
-		WARM: 4,
-		HOT: 5
-	});
+	private drawImage(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlas: CanvasImageSource, imageData: number[])
+	{
+		ctx.drawImage
+		(
+			tileAtlas, // image
+			imageData[0], // source x
+			imageData[1], // source y
+			imageData[2], // source width
+			imageData[2], // source height
+			displayX,  // target x
+			displayY, // target y
+			tileSize, // target width
+			tileSize // target height
+		);
+	}
 
-	static Terrain = Object.freeze
-	({
-		WATER: 1,
-		EARTH: 2,
-		SNOW: 3,
-		ICE: 4,
-		SAND: 5,
-		SWAMP: 6,
-		CLIFF: 7
-	});
+	/**
+	 * @returns {number} height
+	 */
+	public get Height(): number
+	{
+		return this.height;
+	}
 
-	static Vegetation = Object.freeze
-	({
-		TREES: 1,
-		SHRUBS: 2,
-		GRASS: 3,
-		BARE: 4,
-		GRAVEL: 5,
-		ROCKS: 6,
-	});
+	 /**
+	  * @param {Terrain} ter
+	  */
+	public set Terrain(ter: Tile.Terrain)
+	{
+		this.terrain = ter;
+	}
 
-	static _determineTileClimate = function(latitudeFactor)
+	 /**
+	  * @param {Vegetation} veg
+	  */
+	public set Vegetation(veg: Tile.Vegetation)
+	{
+		this.vegetation = veg;
+	}
+
+	public drawImages(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlases: CanvasImageSource[])
+	{
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], Tile.getTerrainImageData(this.terrain));
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], Tile.getVegetationImageData(this.vegetation));
+	}
+}
+
+
+// --------------------
+// Data code
+// --------------------
+
+namespace Tile
+{
+	const TILE_SIZE_TERRAIN = 64;
+	const TILE_SIZE_VEGETATION = 64;
+
+	export enum Climate
+	{
+		ICY,
+		COLD,
+		MILD,
+		WARM,
+		HOT,
+	}
+
+	export enum Terrain
+	{
+		WATER,
+		EARTH,
+		SNOW,
+		ICE,
+		SAND,
+		SWAMP,
+		CLIFF,
+	}
+
+	export enum Vegetation
+	{
+		TREES,
+		SHRUBS,
+		GRASS,
+		BARE,
+		GRAVEL,
+		ROCKS,
+	}
+
+	export function determineTileClimate(latitudeFactor: number): Climate
 	{
 		latitudeFactor = Utilities.clip(latitudeFactor + 0.05 * (Math.random() - 0.5), 0, 1);
 		if (latitudeFactor >= 0.45 && latitudeFactor <= 0.55) { return Tile.Climate.HOT; }
@@ -48,7 +125,7 @@ class Tile
 		else { throw new Error('Invalid given latitudeFactor (' + latitudeFactor + '), has to be between 0 and 1'); }
 	};
 
-	static _determineFertility = function(climate, height, fertilityNoise)
+	export function determineFertility(climate: Climate, height: number, fertilityNoise: number): number
 	{
 		switch (climate)
 		{
@@ -72,11 +149,11 @@ class Tile
 		}
 	};
 
-	static _determineTerrain = function(height, climate)
+	export function determineTerrain(height: number, climate: Climate): Terrain
 	{
-		if (height < Main.settings.heightMin || height > Main.settings.heightMax)
+		if (height < Main.Settings.heightMin || height > Main.Settings.heightMax)
 		{
-			throw new Error('Invalid given height (' + height + '), has to be between ' + Main.settings.heightMin + ' and ' + Main.settings.heightMax);
+			throw new Error('Invalid given height (' + height + '), has to be between ' + Main.Settings.heightMin + ' and ' + Main.Settings.heightMax);
 		}
 		if (height <= 0)
 		{
@@ -111,7 +188,7 @@ class Tile
 		}
 	};
 
-	static _determineVegetation = function(height, climate, fertility)
+	export function determineVegetation(height: number, climate: Climate, fertility: number): Vegetation
 	{
 		if (fertility > 1 || fertility < 0)
 		{
@@ -204,121 +281,47 @@ class Tile
 		}
 	};
 
-	static _getTerrainImageData = function(terrain)
+	export function getTerrainImageData(terrain: Terrain): number[]
 	{
 		switch (terrain)
 		{
 			case Tile.Terrain.WATER:
-				return [Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.EARTH:
-				return [Tile.TILE_SIZE_TERRAIN * 1, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 1, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.SNOW:
-				return [Tile.TILE_SIZE_TERRAIN * 2, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 2, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.ICE:
-				return [Tile.TILE_SIZE_TERRAIN * 3, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 3, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.SAND:
-				return [Tile.TILE_SIZE_TERRAIN * 4, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 4, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.SWAMP:
-				return [Tile.TILE_SIZE_TERRAIN * 5, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 5, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.CLIFF:
-				return [Tile.TILE_SIZE_TERRAIN * 6, Tile.TILE_SIZE_TERRAIN * 0, Tile.TILE_SIZE_TERRAIN];
+				return [TILE_SIZE_TERRAIN * 6, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			default:
 				throw new Error('Invalid given terrain type (' + terrain + ')');
 		}
 	}
 
-	static _getVegetationImageData = function(vegetation)
+	export function getVegetationImageData(vegetation: Vegetation): number[]
 	{
 		switch (vegetation)
 		{
 			case Tile.Vegetation.TREES:
-				return [Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			case Tile.Vegetation.SHRUBS:
-				return [Tile.TILE_SIZE_VEGETATION * 1, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 1, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			case Tile.Vegetation.GRASS:
-				return [Tile.TILE_SIZE_VEGETATION * 2, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 2, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			case Tile.Vegetation.BARE:
-				return [Tile.TILE_SIZE_VEGETATION * 3, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 3, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			case Tile.Vegetation.GRAVEL:
-				return [Tile.TILE_SIZE_VEGETATION * 4, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 4, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			case Tile.Vegetation.ROCKS:
-				return [Tile.TILE_SIZE_VEGETATION * 5, Tile.TILE_SIZE_VEGETATION * 0, Tile.TILE_SIZE_VEGETATION];
+				return [TILE_SIZE_VEGETATION * 5, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			default:
 				throw new Error('Invalid given vegetation type (' + vegetation + ')');
 		}
-	}
-
-
-	// --------------------
-	// Functional code
-	// --------------------
-
-	_height;
-	_climate;
-	_fertility;
-	_terrain;
-	_vegetation;
-
-	constructor(heightNoise, fertilityNoise, latitudeFactor)
-	{
-		if (heightNoise <= Main.settings.waterPercentage)
-		{
-			this._height = Utilities.interpolateLinear(Main.settings.heightMin, 0, heightNoise / Main.settings.waterPercentage);
-		}
-		else
-		{
-			this._height = Utilities.interpolateCubic(0, Main.settings.heightMax, (heightNoise - Main.settings.waterPercentage) / (1 - Main.settings.waterPercentage), -Main.settings.heightMax * Main.settings.flatnessFactorLowlands, Main.settings.heightMax + Main.settings.heightMax * Main.settings.flatnessFactorHighlands);
-		}
-		this._climate = Tile._determineTileClimate(latitudeFactor);
-		this._fertility = Tile._determineFertility(this._climate, this._height, fertilityNoise);
-		this._terrain = Tile._determineTerrain(this._height, this._climate);
-		this._vegetation = Tile._determineVegetation(this._height, this._climate, this._fertility);
-		// console.log(this._height, this._climate, this._fertility, this._terrain, this._vegetation);
-	}
-
-	/**
-	 * @returns {number} _height
-	 */
-	 get height()
-	 {
-		 return this._height;
-	 }
-
-	 /**
-	  * @param {Terrain} ter
-	  */
-	 set terrain(ter)
-	 {
-		 this._terrain = ter;
-	 }
-
-	 /**
-	  * @param {Vegetation} veg
-	  */
-	 set vegetation(veg)
-	 {
-		 this._vegetation = veg;
-	 }
-
-	drawImages(ctx, displayX, displayY, tileSize, tileAtlases)
-	{
-		this._drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], Tile._getTerrainImageData(this._terrain));
-		this._drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], Tile._getVegetationImageData(this._vegetation));
-	}
-
-	_drawImage(ctx, displayX, displayY, tileSize, tileAtlas, imageData)
-	{
-		ctx.drawImage
-		(
-			tileAtlas, // image
-			imageData[0], // source x
-			imageData[1], // source y
-			imageData[2], // source width
-			imageData[2], // source height
-			displayX,  // target x
-			displayY, // target y
-			tileSize, // target width
-			tileSize // target height
-		);
 	}
 }
