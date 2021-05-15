@@ -15,7 +15,7 @@ class BuildingSite extends Building
 	{
 		super(buildingName);
 		this.workProgressCurrent = 0;
-		this.workProgressFinished = BuildingSite._determineRequiredWorkPower(buildingName);
+		this.workProgressFinished = BuildingSite.determineRequiredWorkPower(buildingName);
 		this.workPower = 0;
 	}
 
@@ -44,7 +44,7 @@ class BuildingSite extends Building
 
 namespace BuildingSite
 {
-	export function _determineRequiredWorkPower(buildingName: string): number
+	export function determineRequiredWorkPower(buildingName: string): number
 	{
 		switch (buildingName)
 		{

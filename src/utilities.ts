@@ -10,7 +10,7 @@ namespace Utilities
 	 * @param alpha Float value between 0 and 1.
 	 * @returns Linear interpolated value between min and max based on given alpha.
 	 */
-	export function interpolateLinear(min: number, max: number, alpha: number)
+	export function interpolateLinear(min: number, max: number, alpha: number): number
 	{
 		if (alpha < 0 || alpha > 1)
 		{
@@ -25,7 +25,7 @@ namespace Utilities
 	 * @param alpha Float value between 0 and 1.
 	 * @returns Linear interpolated integer value between min and max based on given alpha.
 	 */
-	export function interpolateLinearInt(min: number, max: number, alpha: number)
+	export function interpolateLinearInt(min: number, max: number, alpha: number): number
 	{
 	if (alpha < 0 || alpha > 1)
 	{
@@ -40,7 +40,7 @@ namespace Utilities
 	 * @param alpha Float value between 0 and 1.
 	 * @returns Cosine interpolated value between min and max based on given alpha.
 	 */
-	export function interpolateCosine(min: number, max: number, alpha: number)
+	export function interpolateCosine(min: number, max: number, alpha: number): number
 	{
 		if (alpha < 0 || alpha > 1)
 		{
@@ -58,7 +58,7 @@ namespace Utilities
 	 * @param sampleB Second sampling point.
 	 * @returns Cubic interpolated value between min and max based on given alpha and sampling points.
 	 */
-	export function interpolateCubic(min: number, max: number, alpha: number, sampleA: number, sampleB: number)
+	export function interpolateCubic(min: number, max: number, alpha: number, sampleA: number, sampleB: number): number
 	{
 	if (alpha < 0 || alpha > 1)
 	{
@@ -71,7 +71,7 @@ namespace Utilities
 	/**
 	 * Throws an exception if the absolute of this value is smaller than given epsilon, else returns the value.
 	 */
-	export function divByZeroProt(value: number, epsilon = 0.0000001)
+	export function divByZeroProt(value: number, epsilon = 0.0000001): number
 	{
 		if (Math.abs(value) <= epsilon)
 		{
@@ -86,7 +86,7 @@ namespace Utilities
 	 * @param value Source number.
 	 * @returns Clipped number between min and max.
 	 */
-	export function clip(value: number, min: number, max: number)
+	export function clip(value: number, min: number, max: number): number
 	{
 		return Math.max(min, Math.min(value, max));
 	}
@@ -95,7 +95,7 @@ namespace Utilities
 	 * @param pos Target position [x, y].
 	 * @returns True if given pos is inside given rect coordinates.
 	 */
-	export function isInRect(pos: number[], minX: number, minY: number, maxX: number, maxY: number)
+	export function isInRect(pos: number[], minX: number, minY: number, maxX: number, maxY: number): boolean
 	{
 		return !(pos[0] < minX || pos[1] < minY || pos[0] >= maxX || pos[1] >= maxY)
 	}
