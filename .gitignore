@@ -5,6 +5,9 @@
 /tmp
 /out-tsc
 
+# typescript output
+/built
+
 # Runtime data
 pids
 *.pid
