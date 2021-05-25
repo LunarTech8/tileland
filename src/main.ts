@@ -29,18 +29,12 @@ class TileMap
             for (let r = 1; r < this.rows - 1; r++)
             {
                 let t = this.tiles.get(c, r);
-                if (t.Height > 0)
+                if (t.height > 0)
                 {
-                    let hasCliff = false;
-                    if (Math.abs(t.Height - this.tiles.get(c - 1, r).Height) >= Main.Settings.cliffMinDiff) { hasCliff = true; }
-                    else if (Math.abs(t.Height - this.tiles.get(c + 1, r).Height) >= Main.Settings.cliffMinDiff) { hasCliff = true; }
-                    else if (Math.abs(t.Height - this.tiles.get(c, r - 1).Height) >= Main.Settings.cliffMinDiff) { hasCliff = true; }
-                    else if (Math.abs(t.Height - this.tiles.get(c, r + 1).Height) >= Main.Settings.cliffMinDiff) { hasCliff = true; }
-                    if (hasCliff)
-                    {
-                        t.Terrain = Tile.Terrain.CLIFF;
-                        t.Vegetation = Tile.Vegetation.BARE;
-                    }
+                    t.cliffs[0] = Tile.determineCliff(Math.abs(t.height - this.tiles.get(c - 1, r).height));
+                    t.cliffs[1] = Tile.determineCliff(Math.abs(t.height - this.tiles.get(c, r + 1).height));
+                    t.cliffs[2] = Tile.determineCliff(Math.abs(t.height - this.tiles.get(c + 1, r).height));
+                    t.cliffs[3] = Tile.determineCliff(Math.abs(t.height - this.tiles.get(c, r -1).height));
                 }
             }
         }
@@ -88,6 +82,7 @@ class Main extends Game
     private settings: Settings;
     private tileAtlasTerrain: CanvasImageSource;
     private tileAtlasVegetation: CanvasImageSource;
+    private tileAtlasCliff: CanvasImageSource;
 
     private constructor()
     {
@@ -108,6 +103,7 @@ class Main extends Game
     {
         this.tileAtlasTerrain = Loader.getImage('terrain');
         this.tileAtlasVegetation = Loader.getImage('vegetation');
+        this.tileAtlasCliff = Loader.getImage('cliff');
         this.settings = new Settings(Settings.MapType.TEST, Settings.MapSize.TINY);
         this.map = new TileMap(this.settings.mapTilesX, this.settings.mapTilesY);
         this.camera = new Camera([0.5, 0.5], 1, Main.CAMERA_SPEED_NORMAL);
@@ -172,7 +168,7 @@ class Main extends Game
             {
                 let displayX = Math.round((c - offsetCol) * tileSize);
                 let displayY = Math.round((r - offsetRow) * tileSize);
-                this.map.tiles.get(c, r).drawImages(this.ctx, displayX, displayY, tileSize, [this.tileAtlasTerrain, this.tileAtlasVegetation]);
+                this.map.tiles.get(c, r).drawImages(this.ctx, displayX, displayY, tileSize, [this.tileAtlasTerrain, this.tileAtlasVegetation, this.tileAtlasCliff]);
             }
         }
     }

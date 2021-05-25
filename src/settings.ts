@@ -7,7 +7,6 @@ class Settings
 
 	heightMin: number;  // In meters
 	heightMax: number;  // In meters
-	cliffMinDiff: number;  // In meters
 	waterPercentage: number;
 	flatnessFactorLowlands: number;  // 0 = No flattening, 1 = Max flattening towards lowlands
 	flatnessFactorHighlands: number;  // 0 = No flattening, 1 = Max flattening towards highlands
@@ -55,7 +54,6 @@ namespace Settings
 			case Settings.MapType.TEST:
 				settings.heightMin = -2000;
 				settings.heightMax = 4000;
-				settings.cliffMinDiff = 250;
 				settings.waterPercentage = 0.3;
 				settings.flatnessFactorLowlands = 0.2;
 				settings.flatnessFactorHighlands = 0.2;
@@ -63,7 +61,6 @@ namespace Settings
 			case Settings.MapType.SMALL_CONTINENTS:
 				settings.heightMin = -2000;
 				settings.heightMax = 4000;
-				settings.cliffMinDiff = 250;
 				settings.waterPercentage = 0.55;
 				settings.flatnessFactorLowlands = 0.2;
 				settings.flatnessFactorHighlands = 0.2;

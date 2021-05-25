@@ -4,11 +4,12 @@
 
 class Tile
 {
-	private height: number;
-	private climate: Tile.Climate;
-	private fertility: number;
-	private terrain: Tile.Terrain;
-	private vegetation: Tile.Vegetation;
+	public height: number;
+	public climate: Tile.Climate;
+	public fertility: number;
+	public terrain: Tile.Terrain;
+	public vegetation: Tile.Vegetation;
+	public cliffs: Tile.Cliff[];  // North, East, South, West
 
 	constructor(heightNoise: number, fertilityNoise: number, latitudeFactor: number)
 	{
@@ -20,11 +21,11 @@ class Tile
 		{
 			this.height = Utilities.interpolateCubic(0, Main.Settings.heightMax, (heightNoise - Main.Settings.waterPercentage) / (1 - Main.Settings.waterPercentage), -Main.Settings.heightMax * Main.Settings.flatnessFactorLowlands, Main.Settings.heightMax + Main.Settings.heightMax * Main.Settings.flatnessFactorHighlands);
 		}
-		this.climate = Tile.determineTileClimate(latitudeFactor);
+		this.climate = Tile.determineClimate(latitudeFactor);
 		this.fertility = Tile.determineFertility(this.climate, this.height, fertilityNoise);
 		this.terrain = Tile.determineTerrain(this.height, this.climate);
 		this.vegetation = Tile.determineVegetation(this.height, this.climate, this.fertility);
-		// console.log(this._height, this._climate, this._fertility, this._terrain, this._vegetation);
+		this.cliffs = [Tile.Cliff.NONE, Tile.Cliff.NONE, Tile.Cliff.NONE, Tile.Cliff.NONE];
 	}
 
 	private drawImage(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlas: CanvasImageSource, imageData: number[])
@@ -43,34 +44,11 @@ class Tile
 		);
 	}
 
-	/**
-	 * @returns {number} height
-	 */
-	public get Height(): number
-	{
-		return this.height;
-	}
-
-	 /**
-	  * @param {Terrain} ter
-	  */
-	public set Terrain(ter: Tile.Terrain)
-	{
-		this.terrain = ter;
-	}
-
-	 /**
-	  * @param {Vegetation} veg
-	  */
-	public set Vegetation(veg: Tile.Vegetation)
-	{
-		this.vegetation = veg;
-	}
-
 	public drawImages(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlases: CanvasImageSource[])
 	{
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], Tile.getTerrainImageData(this.terrain));
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], Tile.getVegetationImageData(this.vegetation));
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], Tile.getCliffImageData(this.cliffs[0]));
 	}
 }
 
@@ -83,6 +61,7 @@ namespace Tile
 {
 	const TILE_SIZE_TERRAIN = 64;
 	const TILE_SIZE_VEGETATION = 64;
+	const TILE_SIZE_CLIFF = 64;
 
 	export enum Climate
 	{
@@ -101,7 +80,6 @@ namespace Tile
 		ICE,
 		SAND,
 		SWAMP,
-		CLIFF,
 	}
 
 	export enum Vegetation
@@ -114,7 +92,15 @@ namespace Tile
 		ROCKS,
 	}
 
-	export function determineTileClimate(latitudeFactor: number): Climate
+	export enum Cliff
+	{
+		NONE,
+		SMALL,
+		MEDIUM,
+		LARGE,
+	}
+
+	export function determineClimate(latitudeFactor: number): Climate
 	{
 		latitudeFactor = Utilities.clip(latitudeFactor + 0.05 * (Math.random() - 0.5), 0, 1);
 		if (latitudeFactor >= 0.45 && latitudeFactor <= 0.55) { return Tile.Climate.HOT; }
@@ -123,7 +109,7 @@ namespace Tile
 		else if (latitudeFactor >= 0.05 && latitudeFactor <= 0.95) { return Tile.Climate.COLD; }
 		else if (latitudeFactor >= 0.00 && latitudeFactor <= 1.00) { return Tile.Climate.ICY; }
 		else { throw new Error('Invalid given latitudeFactor (' + latitudeFactor + '), has to be between 0 and 1'); }
-	};
+	}
 
 	export function determineFertility(climate: Climate, height: number, fertilityNoise: number): number
 	{
@@ -147,7 +133,7 @@ namespace Tile
 			default:
 				throw new Error('Invalid given climate type (' + climate + ')');
 		}
-	};
+	}
 
 	export function determineTerrain(height: number, climate: Climate): Terrain
 	{
@@ -186,7 +172,7 @@ namespace Tile
 			if (climate == Tile.Climate.ICY || climate == Tile.Climate.COLD || climate == Tile.Climate.MILD || climate == Tile.Climate.WARM) { return Tile.Terrain.SNOW; }
 			else { return Tile.Terrain.EARTH; }
 		}
-	};
+	}
 
 	export function determineVegetation(height: number, climate: Climate, fertility: number): Vegetation
 	{
@@ -279,7 +265,15 @@ namespace Tile
 				else { return Tile.Vegetation.ROCKS; }
 			}
 		}
-	};
+	}
+
+	export function determineCliff(heightDiff: number): Cliff
+	{
+		if (heightDiff < 200) { return Tile.Cliff.NONE; }
+		else if (heightDiff < 300) { return Tile.Cliff.SMALL; }
+		else if (heightDiff < 400) { return Tile.Cliff.MEDIUM; }
+		else { return Tile.Cliff.LARGE; }
+	}
 
 	export function getTerrainImageData(terrain: Terrain): number[]
 	{
@@ -297,8 +291,6 @@ namespace Tile
 				return [TILE_SIZE_TERRAIN * 4, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			case Tile.Terrain.SWAMP:
 				return [TILE_SIZE_TERRAIN * 5, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
-			case Tile.Terrain.CLIFF:
-				return [TILE_SIZE_TERRAIN * 6, TILE_SIZE_TERRAIN * 0, TILE_SIZE_TERRAIN];
 			default:
 				throw new Error('Invalid given terrain type (' + terrain + ')');
 		}
@@ -322,6 +314,23 @@ namespace Tile
 				return [TILE_SIZE_VEGETATION * 5, TILE_SIZE_VEGETATION * 0, TILE_SIZE_VEGETATION];
 			default:
 				throw new Error('Invalid given vegetation type (' + vegetation + ')');
+		}
+	}
+
+	export function getCliffImageData(cliff: Cliff): number[]
+	{
+		switch (cliff)
+		{
+			case Tile.Cliff.NONE:
+				return [TILE_SIZE_CLIFF * 0, TILE_SIZE_CLIFF * 0, TILE_SIZE_CLIFF];
+			case Tile.Cliff.SMALL:
+				return [TILE_SIZE_CLIFF * 1, TILE_SIZE_CLIFF * 0, TILE_SIZE_CLIFF];
+			case Tile.Cliff.MEDIUM:
+				return [TILE_SIZE_CLIFF * 2, TILE_SIZE_CLIFF * 0, TILE_SIZE_CLIFF];
+			case Tile.Cliff.LARGE:
+				return [TILE_SIZE_CLIFF * 3, TILE_SIZE_CLIFF * 0, TILE_SIZE_CLIFF];
+			default:
+				throw new Error('Invalid given cliff type (' + cliff + ')');
 		}
 	}
 }

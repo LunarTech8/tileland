@@ -20,6 +20,12 @@ Work status:
 // Worklog:
 // -------------
 
+
+!!>>- Develope better cliffs
+	- Have a cliff border to each side with a minimum height gradient
+	- Cliff border type is depandant on height gradient (small earthen, medium rocky, large rocky, ...)
+	- Buildings can't be placed on tiles with medium border type but units can still traverse them
+	- Buildings and units can't be placed on tiles with large border type
 !!!>>- Create basic elements
 	>>>- Settlements
 		- Founded by Village Square
@@ -49,11 +55,6 @@ Work status:
 // Backlog:
 // -------------
 
-!!- Develope better cliffs
-	- Have a cliff border to each side with a minimum height gradient
-	- Cliff border type is depandant on height gradient (small earthen, medium rocky, large rocky, ...)
-	- Buildings can't be placed on tiles with medium border type but units can still traverse them
-	- Buildings and units can't be placed on tiles with large border type
 !- Fix aliasing/interpolation effect when zooming in more than factor one
 
 
