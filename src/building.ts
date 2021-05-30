@@ -1,4 +1,5 @@
-import { Stock } from "./stock";
+import { LinkedList } from "./linkedList";
+import { Stock, Ware } from "./stock";
 
 
 // --------------------
@@ -14,6 +15,7 @@ export class Building
 	constructor(buildingName: string)
 	{
 		this.name = buildingName;
+		this.resources = new Stock(new LinkedList<Ware>());
 	}
 
 	public addWorker()
@@ -32,31 +34,28 @@ export class Building
 // Data code
 // --------------------
 
-export namespace Building
+export enum Type
 {
-	export enum Type
-	{
-		RESOURCE,
-		PRODUCTION,
-		HOUSING,
-		PUBLIC,
-		SPECIAL,
-	};
+	RESOURCE,
+	PRODUCTION,
+	HOUSING,
+	PUBLIC,
+	SPECIAL,
+};
 
-	export function determineType(buildingName: string): Type
+function determineType(buildingName: string): Type
+{
+	switch (buildingName)
 	{
-		switch (buildingName)
-		{
-			case "VillageSquare":
-				return Building.Type.PUBLIC;
-			case "WoodcutterHut":
-				return Building.Type.RESOURCE;
-			case "Lumbermill":
-				return Building.Type.PRODUCTION;
-			case "PeasantHouse":
-				return Building.Type.HOUSING;
-			default:
-				throw new Error('Unrecognized given building name (' + buildingName + ')');
-		}
-	};
-}
+		case "VillageSquare":
+			return Type.PUBLIC;
+		case "WoodcutterHut":
+			return Type.RESOURCE;
+		case "Lumbermill":
+			return Type.PRODUCTION;
+		case "PeasantHouse":
+			return Type.HOUSING;
+		default:
+			throw new Error('Unrecognized given building name (' + buildingName + ')');
+	}
+};

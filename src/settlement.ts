@@ -1,26 +1,28 @@
+import { LinkedList } from "./linkedList";
+import { Stock, Ware } from "./stock";
 import { Building } from "./building";
-import { Stock } from "./stock";
 
 
 // --------------------
 // Functional code
 // --------------------
 
-class Settlement
+export class Settlement
 {
 	private buildings: Building[];
 	private workers: any[];
 	private resources: Stock;
-	private level: Settlement.Level;
+	private level: Level;
 
 	constructor(startBuilding: Building)
 	{
 		this.buildings = [startBuilding];
+		this.resources = new Stock(new LinkedList<Ware>());
 	}
 
 	private adjustLevel()
 	{
-		this.level = Settlement.determineLevel(this.buildings.length);
+		this.level = determineLevel(this.buildings.length);
 	}
 
 	public addBuilding(building: Building)
@@ -35,23 +37,20 @@ class Settlement
 // Data code
 // --------------------
 
-namespace Settlement
+export enum Level
 {
-	export enum Level
-	{
-		HOMESTEAD,
-		VILLAGE,
-		TOWN,
-		CITY,
-		METROPOLIS,
-	}
+	HOMESTEAD,
+	VILLAGE,
+	TOWN,
+	CITY,
+	METROPOLIS,
+}
 
-	export function determineLevel(buildingCount: number): Level
-	{
-		if (buildingCount <= 5) { return Level.HOMESTEAD; }
-		else if (buildingCount <= 15) { return Level.VILLAGE; }
-		else if (buildingCount <= 30) { return Level.TOWN; }
-		else if (buildingCount <= 50) { return Level.CITY; }
-		else { return Level.METROPOLIS; }
-	}
+function determineLevel(buildingCount: number): Level
+{
+	if (buildingCount <= 5) { return Level.HOMESTEAD; }
+	else if (buildingCount <= 15) { return Level.VILLAGE; }
+	else if (buildingCount <= 30) { return Level.TOWN; }
+	else if (buildingCount <= 50) { return Level.CITY; }
+	else { return Level.METROPOLIS; }
 }

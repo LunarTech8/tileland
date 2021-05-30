@@ -5,7 +5,7 @@ import { Building } from "./building";
 // Functional code
 // --------------------
 
-class Workshop extends Building
+export class Workshop extends Building
 {
 	private productionVariant: number;
 	private workProgressCurrent: number;
@@ -17,7 +17,7 @@ class Workshop extends Building
 		super(buildingName);
 		this.productionVariant = 1;
 		this.workProgressCurrent = 0;
-		this.workProgressFinished = Workshop.determineRequiredWorkPower(buildingName, this.productionVariant);
+		this.workProgressFinished = determineRequiredWorkPower(buildingName, this.productionVariant);
 		this.workPower = 0;
 	}
 
@@ -44,27 +44,24 @@ class Workshop extends Building
 // Data code
 // --------------------
 
-namespace Workshop
+export enum Level
 {
-	export enum Level
-	{
-		HOMESTEAD,
-		VILLAGE,
-		TOWN,
-		CITY,
-		METROPOLIS,
-	}
+	HOMESTEAD,
+	VILLAGE,
+	TOWN,
+	CITY,
+	METROPOLIS,
+}
 
-	export function determineRequiredWorkPower(buildingName: string, productionVariant: number): number
+function determineRequiredWorkPower(buildingName: string, productionVariant: number): number
+{
+	switch (buildingName)
 	{
-		switch (buildingName)
-		{
-			case "Lumbermill":
-				if (productionVariant == 1) { return 3; }
-				else if (productionVariant == 2) { return 2; }
-				throw new Error('Invalid production variant (' + productionVariant + ')');
-			default:
-				throw new Error('Unrecognized given building name (' + buildingName + ')');
-		}
+		case "Lumbermill":
+			if (productionVariant == 1) { return 3; }
+			else if (productionVariant == 2) { return 2; }
+			throw new Error('Invalid production variant (' + productionVariant + ')');
+		default:
+			throw new Error('Unrecognized given building name (' + buildingName + ')');
 	}
 }

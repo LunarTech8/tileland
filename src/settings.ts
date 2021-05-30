@@ -1,5 +1,5 @@
 
-class Settings
+export class Settings
 {
 	// --------------------
 	// Functional code
@@ -14,9 +14,9 @@ class Settings
 	mapTilesX: number;
 	mapTilesY: number;
 
-	constructor(mapType: Settings.MapType, mapSize: Settings.MapSize)
+	constructor(mapType: MapType, mapSize: MapSize)
 	{
-		Settings.setSettingValues(this, mapType, mapSize);
+		setSettingValues(this, mapType, mapSize);
 	}
 }
 
@@ -25,65 +25,62 @@ class Settings
 // Data code
 // --------------------
 
-namespace Settings
+export enum MapType
 {
-	export enum MapType
-	{
-		TEST,
-		SMALL_CONTINENTS,
-		LARGE_CONTINENTS,
-		ARCHIPELAGOS,
-		PANGAEA,
-		CENTRAL_OCEAN,
-		CENTRAL_DESERT,
-	}
+	TEST,
+	SMALL_CONTINENTS,
+	LARGE_CONTINENTS,
+	ARCHIPELAGOS,
+	PANGAEA,
+	CENTRAL_OCEAN,
+	CENTRAL_DESERT,
+}
 
-	export enum MapSize
-	{
-		TINY,
-		SMALL,
-		MEDIUM,
-		LARGE,
-		HUGE,
-	}
+export enum MapSize
+{
+	TINY,
+	SMALL,
+	MEDIUM,
+	LARGE,
+	HUGE,
+}
 
-	export function setSettingValues(settings: Settings, mapType: MapType, mapSize: MapSize)
+function setSettingValues(settings: Settings, mapType: MapType, mapSize: MapSize)
+{
+	switch (mapType)
 	{
-		switch (mapType)
-		{
-			case Settings.MapType.TEST:
-				settings.heightMin = -2000;
-				settings.heightMax = 4000;
-				settings.waterPercentage = 0.3;
-				settings.flatnessFactorLowlands = 0.2;
-				settings.flatnessFactorHighlands = 0.2;
-				break;
-			case Settings.MapType.SMALL_CONTINENTS:
-				settings.heightMin = -2000;
-				settings.heightMax = 4000;
-				settings.waterPercentage = 0.55;
-				settings.flatnessFactorLowlands = 0.2;
-				settings.flatnessFactorHighlands = 0.2;
-				break;
-			// TODO: define other map types
-			default:
-				throw new Error('Invalid given map type (' + mapType + ')');
-		}
-		switch (mapSize)
-		{
-			case Settings.MapSize.TINY:
-				settings.mapPerlinNoiseOctaves = 5;
-				settings.mapTilesX = 64;
-				settings.mapTilesY = 64;
-				break;
-			case Settings.MapSize.MEDIUM:
-				settings.mapPerlinNoiseOctaves = 6;
-				settings.mapTilesX = 512;
-				settings.mapTilesY = 512;
-				break;
-			// TODO: define other map sizes
-			default:
-				throw new Error('Invalid given map size (' + mapSize + ')');
-		}
+		case MapType.TEST:
+			settings.heightMin = -2000;
+			settings.heightMax = 4000;
+			settings.waterPercentage = 0.3;
+			settings.flatnessFactorLowlands = 0.2;
+			settings.flatnessFactorHighlands = 0.2;
+			break;
+		case MapType.SMALL_CONTINENTS:
+			settings.heightMin = -2000;
+			settings.heightMax = 4000;
+			settings.waterPercentage = 0.55;
+			settings.flatnessFactorLowlands = 0.2;
+			settings.flatnessFactorHighlands = 0.2;
+			break;
+		// TODO: define other map types
+		default:
+			throw new Error('Invalid given map type (' + mapType + ')');
+	}
+	switch (mapSize)
+	{
+		case MapSize.TINY:
+			settings.mapPerlinNoiseOctaves = 5;
+			settings.mapTilesX = 64;
+			settings.mapTilesY = 64;
+			break;
+		case MapSize.MEDIUM:
+			settings.mapPerlinNoiseOctaves = 6;
+			settings.mapTilesX = 512;
+			settings.mapTilesY = 512;
+			break;
+		// TODO: define other map sizes
+		default:
+			throw new Error('Invalid given map size (' + mapSize + ')');
 	}
 }

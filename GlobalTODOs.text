@@ -20,7 +20,7 @@ Work status:
 // Worklog:
 // -------------
 
-
+!!!!>- Fix bug: "Laden des Moduls von "http://127.0.0.1:5501/built/src/<MODUEL_NAME>" wurde auf Grund eines nicht freigegebenen MIME-Typs ("text/html") blockiert."
 !!>>- Develope better cliffs
 	- Have a cliff border to each side with a minimum height gradient
 	- Cliff border type is depandant on height gradient (small earthen, medium rocky, large rocky, ...)

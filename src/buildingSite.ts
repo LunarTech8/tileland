@@ -5,7 +5,7 @@ import { Building } from "./building";
 // Functional code
 // --------------------
 
-class BuildingSite extends Building
+export class BuildingSite extends Building
 {
 	private workProgressCurrent: number;
 	private workProgressFinished: number;
@@ -15,7 +15,7 @@ class BuildingSite extends Building
 	{
 		super(buildingName);
 		this.workProgressCurrent = 0;
-		this.workProgressFinished = BuildingSite.determineRequiredWorkPower(buildingName);
+		this.workProgressFinished = determineRequiredWorkPower(buildingName);
 		this.workPower = 0;
 	}
 
@@ -42,22 +42,19 @@ class BuildingSite extends Building
 // Data code
 // --------------------
 
-namespace BuildingSite
+function determineRequiredWorkPower(buildingName: string): number
 {
-	export function determineRequiredWorkPower(buildingName: string): number
+	switch (buildingName)
 	{
-		switch (buildingName)
-		{
-			case "VillageSquare":
-				return 15;
-			case "WoodcutterHut":
-				return 10;
-			case "Lumbermill":
-				return 15;
-			case "PeasantHouse":
-				return 10;
-			default:
-				throw new Error('Unrecognized given building name (' + buildingName + ')');
-		}
+		case "VillageSquare":
+			return 15;
+		case "WoodcutterHut":
+			return 10;
+		case "Lumbermill":
+			return 15;
+		case "PeasantHouse":
+			return 10;
+		default:
+			throw new Error('Unrecognized given building name (' + buildingName + ')');
 	}
 }

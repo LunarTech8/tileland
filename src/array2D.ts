@@ -1,8 +1,11 @@
+import * as MUtilities from "./utilities";
+
+
 // --------------------
 // Functional code
 // --------------------
 
-class Array2D<T>
+export class Array2D<T>
 {
 	public data: T[];
 	public sizeX: number;
@@ -17,7 +20,7 @@ class Array2D<T>
 
 	private checkBoundaries(x: number, y: number)
 	{
-		if (!Utilities.isInRect([x, y], 0, 0, this.sizeX, this.sizeY))
+		if (!MUtilities.isInRect([x, y], 0, 0, this.sizeX, this.sizeY))
 		{
 			throw new Error('Slot (' + x + '/' + y + ') is outside boundaries (0-' + (this.sizeX - 1) + '/0-' + (this.sizeY - 1) + ')');
 		}
