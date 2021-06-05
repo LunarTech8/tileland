@@ -1,5 +1,5 @@
-import { Array2D } from "./array2D";
-import * as MUtilities from "./utilities";
+import { Array2D } from "./array2D.js";
+import * as MUtilities from "./utilities.js";
 
 
 // --------------------

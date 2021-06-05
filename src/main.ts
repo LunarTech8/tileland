@@ -1,11 +1,11 @@
-import { Array2D } from "./array2D";
-import { Tile, determineCliff } from "./tile";
-import * as MSettings from "./settings";
-import * as MRandom from "./random";
-import * as MGame from "./game";
-import * as MKeyboard from "./keyboard";
-import * as MLoader from "./loader";
-import * as MUtilities from "./utilities";
+import { Array2D } from "./array2D.js";
+import { Tile, determineCliff } from "./tile.js";
+import * as MSettings from "./settings.js";
+import * as MRandom from "./random.js";
+import * as MGame from "./game.js";
+import * as MKeyboard from "./keyboard.js";
+import * as MLoader from "./loader.js";
+import * as MUtilities from "./utilities.js";
 
 
 // --------------------
@@ -111,7 +111,6 @@ export class Main extends MGame.Game
 
     init()
     {
-        console.debug("init was called");  // DEBUG:
         // Load images:
         this.tileAtlasTerrain = MLoader.getImage('terrain');
         this.tileAtlasVegetation = MLoader.getImage('vegetation');

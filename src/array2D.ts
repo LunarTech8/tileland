@@ -1,4 +1,4 @@
-import * as MUtilities from "./utilities";
+import * as MUtilities from "./utilities.js";
 
 
 // --------------------

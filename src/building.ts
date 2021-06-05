@@ -1,5 +1,5 @@
-import { LinkedList } from "./linkedList";
-import { Stock, Ware } from "./stock";
+import { LinkedList } from "./linkedList.js";
+import { Stock, Ware } from "./stock.js";
 
 
 // --------------------

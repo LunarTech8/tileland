@@ -7,10 +7,7 @@ export abstract class Game
     private previousElapsed: number;
     public ctx: CanvasRenderingContext2D;
 
-    constructor()
-    {
-        // this.init();  // FIXME: causes recursion
-    }
+    constructor() {}
 
     abstract init(): void;
     abstract load(): Promise<unknown>[];
@@ -19,7 +16,6 @@ export abstract class Game
 
     tick(elapsed: number)
     {
-        window.requestAnimationFrame(this.tick);  // FIXME: 'this' is unrecognized, maybe because it's called out of a bound object in 'run'
         // Clear previous frame:
         this.ctx.clearRect(0, 0, DISPLAY_SIZE_X, DISPLAY_SIZE_Y);
         // Compute delta time in seconds, also cap it:
@@ -29,17 +25,23 @@ export abstract class Game
         // Update and render:
         this.update(delta);
         this.render();
+        // Create callback to next frame:
+        window.requestAnimationFrame(this.tick.bind(this));
     }
 
     run(context: CanvasRenderingContext2D)
     {
+        // Set object variables:
         this.ctx = context;
         this.previousElapsed = 0;
-        Promise.all(this.load()).then(function()
+        // Define post load actions:
+        let postLoad = function()
         {
             this.init();
-            window.requestAnimationFrame(this.tick);
-        }.bind(this));
+            window.requestAnimationFrame(this.tick.bind(this));
+        }.bind(this);
+        // Load then start post load actions:
+        Promise.all(this.load()).then(postLoad);
     }
 }
 

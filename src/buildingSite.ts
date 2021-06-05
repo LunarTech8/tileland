@@ -1,4 +1,4 @@
-import { Building } from "./building";
+import { Building } from "./building.js";
 
 
 // --------------------

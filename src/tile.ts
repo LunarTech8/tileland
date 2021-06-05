@@ -1,5 +1,5 @@
-import { Main } from "./main";
-import * as MUtilities from "./utilities";
+import { Main } from "./main.js";
+import * as MUtilities from "./utilities.js";
 
 
 // --------------------
@@ -52,7 +52,7 @@ export class Tile
 	{
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], getTerrainImageData(this.terrain));
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], getVegetationImageData(this.vegetation));
-		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[0]));
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[0]));  // TODO: also draw entries 1-3 with correct rotation
 	}
 }
 
