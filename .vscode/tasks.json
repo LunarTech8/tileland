@@ -5,13 +5,15 @@
 			"type": "typescript",
 			"tsconfig": "tsconfig.json",
 			"problemMatcher": [
-				"$tsc"
+				"$tsc-watch"
 			],
+			"isBackground": true,
+			"option": "watch",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "tsc: build - tsconfig.json"
+			"label": "tsc: watch - tsconfig.json"
 		}
 	]
 }
