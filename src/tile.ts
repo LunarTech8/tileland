@@ -32,8 +32,11 @@ export class Tile
 		this.cliffs = [Cliff.NONE, Cliff.NONE, Cliff.NONE, Cliff.NONE];
 	}
 
-	private drawImage(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlas: CanvasImageSource, imageData: number[])
+	private drawImage(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlas: CanvasImageSource, imageData: number[], rotation: number = 0)
 	{
+		ctx.save();
+		ctx.translate(displayX + tileSize / 2, displayY + tileSize / 2);
+		ctx.rotate(Math.PI / 180 * rotation);
 		ctx.drawImage
 		(
 			tileAtlas, // image
@@ -41,18 +44,22 @@ export class Tile
 			imageData[1], // source y
 			imageData[2], // source width
 			imageData[2], // source height
-			displayX,  // target x
-			displayY, // target y
+			-tileSize / 2,  // target x
+			-tileSize / 2, // target y
 			tileSize, // target width
 			tileSize // target height
 		);
+		ctx.restore();
 	}
 
 	public drawImages(ctx: CanvasRenderingContext2D, displayX: number, displayY: number, tileSize: number, tileAtlases: CanvasImageSource[])
 	{
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[0], getTerrainImageData(this.terrain));
 		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[1], getVegetationImageData(this.vegetation));
-		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[0]));  // TODO: also draw entries 1-3 with correct rotation
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[0]), 0);
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[1]), 270);
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[2]), 180);
+		this.drawImage(ctx, displayX, displayY, tileSize, tileAtlases[2], getCliffImageData(this.cliffs[3]), 90);
 	}
 }
 

@@ -44,7 +44,7 @@ class TileMap
                     t.cliffs[0] = determineCliff(Math.abs(t.height - this.tiles.get(c - 1, r).height));
                     t.cliffs[1] = determineCliff(Math.abs(t.height - this.tiles.get(c, r + 1).height));
                     t.cliffs[2] = determineCliff(Math.abs(t.height - this.tiles.get(c + 1, r).height));
-                    t.cliffs[3] = determineCliff(Math.abs(t.height - this.tiles.get(c, r -1).height));
+                    t.cliffs[3] = determineCliff(Math.abs(t.height - this.tiles.get(c, r - 1).height));
                 }
             }
         }
